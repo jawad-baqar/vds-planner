@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VDS Planner test report</title>
+<style>
+:root{
+  --bg:#f7f7f5; --panel:#fff; --ink:#1b1c1e; --muted:#62656b; --line:#d7d9dd; --soft:#eef0f2;
+  --accent:#2f5d8a; --accent-soft:#e3ecf5; --ok:#2e7d4f; --ok-soft:#e2f2e8; --warn:#9a6a00; --warn-soft:#fbf0d4; --bad:#a63a32; --bad-soft:#f8e3e1;
+  --sans:system-ui,-apple-system,"Segoe UI",sans-serif; --mono:ui-monospace,Consolas,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#16171a; --panel:#1f2125; --ink:#e7e8ea; --muted:#9a9ea6; --line:#363a41; --soft:#2a2d33;
+  --accent:#7fb0e0; --accent-soft:#22344a; --ok:#6cc495; --ok-soft:#1d3428; --warn:#e0b450; --warn-soft:#3a3018; --bad:#ec8a80; --bad-soft:#3d2220;
+}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 var(--sans)}
+.wrap{max-width:1000px;margin:0 auto;padding:32px 16px 64px}
+h1{font-size:25px;margin:4px 0}
+h2{font-size:18px;margin:30px 0 8px;padding-top:10px;border-top:1px solid var(--line)}
+.eyebrow{font:11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sub{color:var(--muted);max-width:760px}
+code{font-family:var(--mono);font-size:12.5px;background:var(--soft);padding:1px 5px;border-radius:4px}
+.tldr{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:8px;padding:12px 16px}
+.tldr ul{margin:6px 0;padding-left:20px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.stat b{display:block;font-size:22px}
+.stat span{color:var(--muted);font-size:12.5px}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--soft);font-weight:600;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+.tag{display:inline-block;font:11px/1.6 var(--mono);padding:0 7px;border-radius:10px;border:1px solid currentColor;white-space:nowrap}
+.t-ok{color:var(--ok);background:var(--ok-soft)} .t-warn{color:var(--warn);background:var(--warn-soft)} .t-bad{color:var(--bad);background:var(--bad-soft)} .t-info{color:var(--accent);background:var(--accent-soft)}
+@media print{.tbl{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="eyebrow">VDS Planner · internal test report</div>
+<h1>VDS Planner: internal test report</h1>
+<p class="sub">This report records the tests that were done before the live test, the defects that the tests found, and the items that only a live test can cover. The tests used made-up data. No test connected to a vCenter.</p>
+
+<section class="tldr">
+<b>Result: ready for the lab test</b>
+<ul>
+  <li>All internal tests pass: planner self-test 83 of 83, offline script tests 148 of 148 and Pester 55 of 55 on PowerShell 5.1 and on PowerShell 7.6, PowerCLI Core parameter check 113 of 113.</li>
+  <li>The workbook chain (converter, project file, name repair, simulation) is tested with a synthetic workbook. It also ran on five real vCenter inventories. Those results hold environment data, so they stay with the data owner, not in this repository.</li>
+  <li>The planner reads the inventory workbook itself (full, network sheets only, or CSV exports of the sheets). On five real vCenter inventories it gives the same inventory as <code>Export-PlannerInventory.ps1</code>, row for row, on PowerShell 5.1 and 7 (<code>tests\Test-PlannerWorkbook.ps1</code>). It reads the largest workbook in less than one second.</li>
+  <li>Open before the pilot: the live test checklist (<code>docs/vds-planner-live-test.html</code>) on a lab vCenter, and the parameter check with the PowerCLI VDS module installed.</li>
+</ul>
+</section>
+
+<div class="stats">
+  <div class="stat"><b>83 / 83</b><span>planner self-test (Chromium)</span></div>
+  <div class="stat"><b>148 / 148</b><span>offline script tests (PowerShell 5.1 and 7.6)</span></div>
+  <div class="stat"><b>55 / 55</b><span>Pester 5.9.1 (PowerShell 5.1 and 7.6)</span></div>
+  <div class="stat"><b>113 / 113</b><span>PowerCLI Core parameters</span></div>
+  <div class="stat"><b>21</b><span>defects found and corrected</span></div>
+</div>
+
+<h2>1. Test levels</h2>
+<div class="tbl"><table>
+<thead><tr><th>Level</th><th>What</th><th>How</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td>Alpha: units</td><td>Plan file checks (<code>Test-VdsPlan</code>, hash), planner functions (SHA-256, CSV parser, IP and mask, trunk range, version compare)</td><td><code>tests\Invoke-OfflineTests.ps1</code> part 2, planner self-test</td><td><span class="tag t-ok">pass</span></td></tr>
+<tr><td>Alpha: scripts</td><td>Parse, help text, <code>-WhatIf</code> support, no <code>$PSScriptRoot</code> in a parameter default</td><td><code>tests\Invoke-OfflineTests.ps1</code> part 1, Pester 5.9.1 (<code>tests\*.Tests.ps1</code>)</td><td><span class="tag t-ok">pass</span></td></tr>
+<tr><td>Alpha: PowerCLI contract</td><td>Each PowerCLI command and parameter in the scripts exists (PowerCLI 13.3 Core). vSphere API types and methods exist (<code>DVPortgroupConfigSpec.AutoExpand</code>, <code>ReconfigureDVPortgroup</code>, <code>SelectVnicForNicType</code>).</td><td><code>tests\Test-PowerCliParameters.ps1</code>, reflection on <code>VMware.Vim</code></td><td><span class="tag t-ok">pass</span> Core <span class="tag t-warn">open</span> VDS module</td></tr>
+<tr><td>Beta: end to end, fake vCenter</td><td>Export, preflight, switch part, VMkernel part, rollback and launcher against recording stubs. Each change command and its parameters are checked. 13 stop conditions are tested.</td><td><code>tests\Invoke-OfflineTests.ps1</code> part 3, on PowerShell 5.1 and 7.6</td><td><span class="tag t-ok">pass</span></td></tr>
+<tr><td>Beta: inventory workbook chain</td><td>Synthetic workbook to planner input, project with two drafts, name repair and simulation. The same chain on five real vCenter inventories (results kept by the data owner).</td><td><code>tests\Invoke-OfflineTests.ps1</code>, <code>tests\Invoke-InventorySimulation.ps1</code>, <code>tests\Test-PlannerWorkbook.ps1</code> (planner import against the script, with Node.js), planner self-test (workbooks made in memory: full, network sheets only, CSV with semicolons)</td><td><span class="tag t-ok">pass</span></td></tr>
+<tr><td>Beta: planner as an operator</td><td>Import, zones, shared VDS, VMkernel adapter and IP plan, commit, generate again, second draft with blocks, inventory refresh and Sync, open an earlier project, HTML injection from inventory text</td><td>Planner self-test and manual runs in the browser</td><td><span class="tag t-ok">pass</span></td></tr>
+<tr><td>Live</td><td>Lab vCenter, then pilot cluster</td><td><code>docs\vds-planner-live-test.html</code> (20 cases)</td><td><span class="tag t-info">to do</span></td></tr>
+</tbody></table></div>
+
+<h2>2. Defects found and corrected</h2>
+<div class="tbl"><table>
+<thead><tr><th>ID</th><th>Severity</th><th>Defect</th><th>Effect in a live run</th><th>Correction</th></tr></thead>
+<tbody>
+<tr><td>DF-01</td><td><span class="tag t-bad">major</span></td><td>In the live check function, a local variable had the same name as the plan parameter (PowerShell names are not case-sensitive).</td><td>A second run stopped with a false block. The port group name check and the IP address check did not run.</td><td>Variable renamed. Tests for a second run, name clash and IP in use.</td></tr>
+<tr><td>DF-02</td><td><span class="tag t-bad">major</span></td><td><code>$PSScriptRoot</code> is empty in a parameter default under <code>powershell.exe -File</code> (Windows PowerShell 5.1).</td><td>All scripts failed when started from a scheduled task or another script.</td><td>Default set in the script body in 8 scripts. Static test added.</td></tr>
+<tr><td>DF-03</td><td><span class="tag t-bad">major</span></td><td>Distributed port group names must be unique in a datacenter. One VDS for each cluster gives the same names.</td><td>The second VDS in a datacenter failed during the change window.</td><td>Planner check (block in a draft, warning across drafts), name prefix button, preflight block before any change.</td></tr>
+<tr><td>DF-04</td><td><span class="tag t-bad">major</span></td><td>No check of the ESXi version against the VDS version.</td><td>Hosts before ESXi 8.0 U3 could not join a VDS 8.0.3. The run failed after the VDS was created.</td><td>Export has the ESXi version. Planner and preflight block.</td></tr>
+<tr><td>DF-05</td><td><span class="tag t-bad">major</span></td><td><code>Export-Csv</code> in PowerShell 5.1 writes ASCII.</td><td>Names with special characters became <code>?</code> in the export and the logs.</td><td><code>-Encoding UTF8</code> on all 8 CSV writes. Test with a non-ASCII name.</td></tr>
+<tr><td>DF-06</td><td><span class="tag t-bad">major</span></td><td><code>-WhatIf</code> also skipped the output folder and the transcript in the seed scripts.</td><td><code>-WhatIf</code> runs failed or wrote no log.</td><td><code>-WhatIf:$false</code> on the log writes.</td></tr>
+<tr><td>DF-07</td><td><span class="tag t-warn">minor</span></td><td>Read-only checks ran between changes.</td><td>A run could stop after some changes.</td><td>All checks run first. A blocking item stops before any change.</td></tr>
+<tr><td>DF-08</td><td><span class="tag t-warn">minor</span></td><td>Inventory import cleared the file list too early.</td><td>Import did not finish.</td><td>Corrected.</td></tr>
+<tr><td>DF-09</td><td><span class="tag t-warn">minor</span></td><td>Generate again used the new draft name after a rename.</td><td>File names did not agree with the launcher.</td><td>Base name kept at commit.</td></tr>
+<tr><td>DF-10</td><td><span class="tag t-warn">minor</span></td><td>Sync did not update a VLAN that the operator did not change.</td><td>Stale VLAN after a refresh.</td><td>Corrected. Operator changes stay.</td></tr>
+<tr><td>DF-11</td><td><span class="tag t-warn">minor</span></td><td>SHA-256 needed a browser feature that is not always available.</td><td>Commit failed in some browsers.</td><td>Built-in SHA-256, tested against known values and PowerShell.</td></tr>
+<tr><td>DF-12</td><td><span class="tag t-warn">minor</span></td><td>V-rule numbers in help text were not the numbers of the guide.</td><td>Wrong references.</td><td>Corrected.</td></tr>
+<tr><td>DF-13</td><td><span class="tag t-warn">minor</span></td><td>Import history counted new clusters as changes.</td><td>Wrong count.</td><td>Corrected.</td></tr>
+<tr><td>DF-15</td><td><span class="tag t-bad">major</span></td><td>Two runs in the same second used the same transcript and log file name.</td><td>PowerShell 7: the second run failed. PowerShell 5.1: the second run replaced the log of the first run (lost audit record).</td><td>Milliseconds in all log file names.</td></tr>
+<tr><td>DF-16</td><td><span class="tag t-warn">minor</span></td><td>PowerShell 7 changes the ISO commit time of the plan into a local date.</td><td>The commit time in the output and the logs was in a different format.</td><td>The plan reader keeps the ISO text. Test added.</td></tr>
+<tr><td>DF-17</td><td><span class="tag t-bad">major</span></td><td>The planner needed one check box for each port group that is not on all hosts (V-05).</td><td>A large vCenter had more than 1,000 of these port groups. The planner was not usable for it.</td><td>Trunk check for a full VDS, one check line for each VDS.</td></tr>
+<tr><td>DF-18</td><td><span class="tag t-warn">minor</span></td><td>The converter lost the count of a vCenter with one existing VDS (an <code>if</code> statement returns one item, not an array).</td><td>Wrong count in the summary.</td><td>Corrected.</td></tr>
+<tr><td>DF-19</td><td><span class="tag t-warn">minor</span></td><td>The converter wrote empty CSV files for a vCenter with nothing to convert.</td><td>The planner refused the empty files.</td><td>No empty files. A message tells that there is nothing to convert.</td></tr>
+<tr><td>DF-14</td><td><span class="tag t-warn">minor</span></td><td>Text errors: report file count, "1 hosts".</td><td>None.</td><td>Corrected.</td></tr>
+</tbody></table></div>
+
+<h2>3. Not covered by the internal tests</h2>
+<div class="tbl"><table>
+<thead><tr><th>Item</th><th>Why</th><th>Covered by</th></tr></thead>
+<tbody>
+<tr><td>Real vCenter and ESXi behaviour</td><td>No vCenter in the test environment</td><td>Live test LT-06 to LT-19</td></tr>
+<tr><td>Parameter names of the PowerCLI VDS module (<code>New-VDSwitch</code>, <code>New-VDPortgroup</code>, teaming and security commands)</td><td>The VDS module was not installed on the test machine. The stub tests check the parameters that the scripts send, not that PowerCLI accepts them.</td><td>Live test LT-00</td></tr>
+<tr><td>Edge folder picker for the package</td><td>The test browser opens local files with a different address type. The download fallback is tested.</td><td>Live test LT-04</td></tr>
+<tr><td>Rule: a distributed port group name must be unique in a datacenter</td><td>Known vCenter behaviour. The toolkit checks it, but the test machine cannot confirm it.</td><td>Live test LT-07</td></tr>
+</tbody></table></div>
+
+<h2>4. How to run the tests again</h2>
+<div class="tbl"><table>
+<thead><tr><th>Test</th><th>Command</th></tr></thead>
+<tbody>
+<tr><td>Planner self-test</td><td>Open <code>planner\vds-planner.html</code> in Edge, select <b>Self-test</b>. Or add <code>#selftest</code> to the address.</td></tr>
+<tr><td>Offline script tests</td><td><code>powershell.exe -NoProfile -File .\tests\Invoke-OfflineTests.ps1</code> and <code>pwsh -NoProfile -File .\tests\Invoke-OfflineTests.ps1</code></td></tr>
+<tr><td>PowerCLI parameters</td><td><code>powershell.exe -NoProfile -File .\tests\Test-PowerCliParameters.ps1</code></td></tr>
+<tr><td>Pester</td><td><code>Invoke-Pester .\tests</code> (Pester 5)</td></tr>
+</tbody></table></div>
+</div>
+</body>
+</html>

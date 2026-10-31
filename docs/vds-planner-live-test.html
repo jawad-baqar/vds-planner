@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'">
+<title>VDS Planner live test</title>
+<style>
+:root{
+  --bg:#f7f7f5; --panel:#fff; --ink:#1b1c1e; --muted:#62656b; --line:#d7d9dd; --soft:#eef0f2;
+  --accent:#2f5d8a; --accent-soft:#e3ecf5; --ok:#2e7d4f; --ok-soft:#e2f2e8; --warn:#9a6a00; --warn-soft:#fbf0d4; --bad:#a63a32; --bad-soft:#f8e3e1;
+  --sans:system-ui,-apple-system,"Segoe UI",sans-serif; --mono:ui-monospace,Consolas,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#16171a; --panel:#1f2125; --ink:#e7e8ea; --muted:#9a9ea6; --line:#363a41; --soft:#2a2d33;
+  --accent:#7fb0e0; --accent-soft:#22344a; --ok:#6cc495; --ok-soft:#1d3428; --warn:#e0b450; --warn-soft:#3a3018; --bad:#ec8a80; --bad-soft:#3d2220;
+}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 var(--sans)}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:24px;margin:4px 0}
+h2{font-size:17px;margin:26px 0 8px}
+.eyebrow{font:11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sub{color:var(--muted);max-width:780px}
+code{font-family:var(--mono);font-size:12.5px;background:var(--soft);padding:1px 5px;border-radius:4px}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-bottom:1px solid var(--line)}
+.bar input{padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font:13px var(--sans)}
+.btn{padding:5px 11px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);cursor:pointer;font-size:12.5px}
+.btn:hover{border-color:var(--accent)}
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.tag{display:inline-block;font:11px/1.6 var(--mono);padding:0 7px;border-radius:10px;border:1px solid currentColor;white-space:nowrap}
+.t-ok{color:var(--ok);background:var(--ok-soft)} .t-warn{color:var(--warn);background:var(--warn-soft)} .t-bad{color:var(--bad);background:var(--bad-soft)} .t-info{color:var(--accent);background:var(--accent-soft)}
+.case{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:8px;padding:10px 14px;margin:10px 0}
+.case.pass{border-left-color:var(--ok)} .case.fail{border-left-color:var(--bad)} .case.blocked{border-left-color:var(--warn)} .case.na{opacity:.7}
+.case-h{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.case-h b{font-family:var(--mono)}
+.case-h .t{font-weight:600;flex:1;min-width:220px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+.grid .lbl{font:11px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.grid ol,.grid ul{margin:4px 0;padding-left:20px}
+.res{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.res select,.res input{padding:4px 7px;border:1px solid var(--line);border-radius:5px;background:var(--panel);color:var(--ink);font:13px var(--sans)}
+.res input.note{flex:1;min-width:220px}
+@media (max-width:760px){.grid{grid-template-columns:1fr}}
+@media print{.bar .btn{display:none} .case{break-inside:avoid} .bar{position:static}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="eyebrow">VDS Planner · live test</div>
+<h1>VDS Planner: live test checklist</h1>
+<p class="sub">Do the cases in order on a lab vCenter first, then on the pilot cluster under the change control of your organization. Set the result of each case and write a note. The page keeps the results in this browser only. Use <b>Export CSV</b> to keep them with the change record. All names and addresses in this page are examples.</p>
+
+<div class="bar">
+  <input id="tester" placeholder="Tester name" size="16">
+  <input id="env" placeholder="Environment (for example Lab vCenter)" size="26">
+  <button class="btn" id="csv">Export CSV</button>
+  <button class="btn" id="json">Copy JSON</button>
+  <button class="btn" id="clear">Clear results</button>
+  <span class="stats" id="stats"></span>
+</div>
+<div id="cases"></div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  const C = [
+    ['Preparation', 'LT-00', 'Tests that need no vCenter pass on the jump host', ['Install PowerCLI 13 or later with the VDS module.', 'Run .\\tests\\Test-PowerCliParameters.ps1.', 'Run .\\tests\\Invoke-OfflineTests.ps1.', 'Open planner\\vds-planner.html in Edge. Select Self-test.'], ['Parameter check: 0 wrong, VDS module checked (no SKIP for VMware.VimAutomation.Vds).', 'Offline tests: 0 failed.', 'Self-test: all passed.']],
+    ['Preparation', 'LT-01', 'Planner makes no network connection', ['Open the planner in Edge. Press F12, select Network.', 'Import the inventory, commit a draft, save the project.'], ['The Network tab shows no request to any server.']],
+    ['Inventory', 'LT-02', 'Export of one lab cluster', ['Connect to the lab vCenter (read-only account is sufficient).', 'Run Export-VssLayout.ps1 -Cluster <lab cluster>.'], ['Three CSV files in .\\output\\.', 'The vdsplan CSV has the Datacenter column. The hosts CSV has EsxVersion and SpeedMbps.', 'vSwitchBMC and vSwitchiDRACvusb are not in the files.', 'Names with special characters are correct (UTF-8).']],
+    ['Inventory', 'LT-03', 'Planner shows the cluster as in vCenter', ['Import the _vdsplan.csv and _hosts.csv files.', 'Open the Environment tab.'], ['Hosts, switches, uplinks, NIC speed, datacenter and lowest ESXi version are the same as in the vSphere Client.']],
+    ['Plan', 'LT-04', 'Draft, commit and package', ['Add the VDS of the lab cluster. Set the security zone.', 'Set one port group to static 16 ports fixed, one to ephemeral, one to VLAN trunking.', 'Add a vMotion VMkernel adapter. Fill the IP plan.', 'Commit. Save the project.'], ['Four files: plan JSON, .sha256, launcher .ps1, report .html.', 'The report shows the same settings as the planner.', 'The vMotion adapter has MTU 9000. The VDS MTU is 9000. The checks show the physical switch warning.']],
+    ['Plan', 'LT-05', 'A changed plan file is refused', ['Copy the package to a test folder. Change one character in the plan JSON.', 'Run .\\Invoke-<draft>-v1.ps1 -Part Check.'], ['The script stops with "The plan file changed after the commit". Nothing changes.']],
+    ['Preflight', 'LT-06', 'Preflight on the lab vCenter', ['Run .\\Invoke-<draft>-v1.ps1 -Part Check. Log in as administrator@vsphere.local (or the account of your organization).'], ['Result READY, or blocking items that are correct for the lab.', 'A CSV report and a transcript in .\\output\\.']],
+    ['Preflight', 'LT-07', 'Port group name clash is found', ['In the lab datacenter, make a test VDS with a port group that has the name of one planned port group.', 'Run -Part Check again. Then remove the test VDS.'], ['Blocking item: the name is on another VDS in the datacenter.', 'Note in the result: did vCenter also refuse the same name on a second VDS when you made it by hand? (This confirms the rule.)']],
+    ['Switch', 'LT-08', 'WhatIf run makes no change', ['Run .\\Invoke-<draft>-v1.ps1 -WhatIf.', 'Look at Recent Tasks in the vSphere Client.'], ['"What if" lines for the VDS, each port group and the hosts.', 'No task in vCenter.']],
+    ['Switch', 'LT-09', 'VDS and port groups are correct', ['Run .\\Invoke-<draft>-v1.ps1. Answer the prompts.', 'In the vSphere Client, examine the VDS and each port group.'], ['VDS version, number of uplinks, MTU and LLDP (both) as in the plan.', 'Each port group: VLAN or trunk, binding, number of ports, elastic or fixed, teaming, failover order and security as in the report.', 'The hosts are on the VDS with no uplink. No VM or host lost its network.']],
+    ['Switch', 'LT-10', 'A second run changes nothing', ['Run .\\Invoke-<draft>-v1.ps1 again.'], ['The log shows "Exists, not changed" for the VDS and each port group. No new task in vCenter.']],
+    ['Migration', 'LT-11', 'First uplink of one host', ['Put one host in maintenance mode.', 'Run Move-HostToVds.ps1 -Stage 1 for that host.'], ['One uplink is on the VDS. The host stays connected to vCenter.']],
+    ['Migration', 'LT-12', 'VM network move and rollback', ['Run Move-VmNetworkToVds.ps1 for one test port group.', 'Run it with -RollbackCsv. Then run the move again.'], ['The VMs keep their network. The rollback CSV puts them back on the standard port group.']],
+    ['Migration', 'LT-13', 'Stage 2 of one host', ['Run Move-HostToVds.ps1 -Stage 2 with -VmkMap.'], ['vmk0 and the remaining uplinks are on the VDS. The host stays connected.']],
+    ['VMkernel', 'LT-14', 'New vMotion adapter on one host', ['Run .\\Invoke-<draft>-v1.ps1 -Part VMkernel -VMHost <host> -WhatIf, then with no -WhatIf.', 'On the host: esxcli network ip interface list, esxcli network ip interface ipv4 get.', 'vmkping -I <new vmk> -S vmotion -d -s 8972 <vMotion IP of another host>.'], ['The adapter is on the vMotion TCP/IP stack with the planned IP, mask and MTU 9000.', 'vMotion is off on vmk0.', 'vmkping with 8972 bytes and do-not-fragment works (jumbo frames end to end).', 'A test vMotion between two hosts works.']],
+    ['VMkernel', 'LT-15', 'Adapter on a host with no uplink is refused', ['Run -Part VMkernel for a host that is still on the standard switch.'], ['The script stops with "has no uplink" and changes nothing.']],
+    ['Rollback', 'LT-16', 'Rollback script refuses a VDS in use', ['Run Remove-VdsPlanSwitch.ps1 -WhatIf while a host has an uplink on the VDS.'], ['The script stops with "is in use" and lists the uplinks.']],
+    ['Rollback', 'LT-17', 'Rollback of the lab VDS', ['Move the VMs, VMkernel adapters and uplinks back to the standard switch.', 'Run Remove-VdsPlanSwitch.ps1.'], ['The VDS and its port groups are removed. The hosts and VMs work on the standard switch.']],
+    ['Refresh', 'LT-18', 'Inventory refresh and Sync', ['Add a test port group on the standard switch of all lab hosts. Run Export-VssLayout.ps1 again.', 'Import the new files in the planner. Apply. Select Sync from inventory.'], ['The difference view shows the new port group.', 'The draft warns until Sync. After Sync, the port group is in the draft.']],
+    ['Records', 'LT-19', 'Logs are complete', ['Open .\\output\\.'], ['A transcript and a CSV log for each run. No file holds a password.']]
+  ];
+  const KEY = 'vds-planner-live-test-v1';
+  let st = {};
+  try { st = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { st = {}; }
+  st.r = st.r || {};
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) { } };
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const RES = [['', 'Not run'], ['pass', 'Pass'], ['fail', 'Fail'], ['blocked', 'Blocked'], ['na', 'Not applicable']];
+  function render() {
+    let phase = '', h = '';
+    C.forEach(([ph, id, title, steps, exp]) => {
+      if (ph !== phase) { h += `<h2>${esc(ph)}</h2>`; phase = ph; }
+      const r = st.r[id] || {};
+      h += `<div class="case ${esc(r.res || '')}"><div class="case-h"><b>${id}</b><span class="t">${esc(title)}</span></div>` +
+        `<div class="grid"><div><div class="lbl">Steps</div><ol>${steps.map(s => '<li>' + esc(s) + '</li>').join('')}</ol></div>` +
+        `<div><div class="lbl">Expected result</div><ul>${exp.map(s => '<li>' + esc(s) + '</li>').join('')}</ul></div></div>` +
+        `<div class="res"><select data-id="${id}" data-k="res">${RES.map(([v, t]) => `<option value="${v}"${(r.res || '') === v ? ' selected' : ''}>${t}</option>`).join('')}</select>` +
+        `<input class="note" data-id="${id}" data-k="note" placeholder="Note, ticket or evidence" value="${esc(r.note || '')}">` +
+        `${r.at ? '<span class="tag t-info">' + esc(r.at) + '</span>' : ''}</div></div>`;
+    });
+    document.getElementById('cases').innerHTML = h;
+    const cnt = k => C.filter(c => (st.r[c[1]] || {}).res === k).length;
+    const run = C.filter(c => (st.r[c[1]] || {}).res).length;
+    document.getElementById('stats').innerHTML = `<span class="tag t-ok">${cnt('pass')} pass</span><span class="tag t-bad">${cnt('fail')} fail</span>` +
+      `<span class="tag t-warn">${cnt('blocked')} blocked</span><span class="tag t-info">${run} of ${C.length} run</span>`;
+    document.getElementById('tester').value = st.tester || '';
+    document.getElementById('env').value = st.env || '';
+  }
+  document.addEventListener('change', e => {
+    const t = e.target;
+    if (t.id === 'tester' || t.id === 'env') { st[t.id] = t.value; save(); return; }
+    if (!t.dataset.id) return;
+    const r = st.r[t.dataset.id] = st.r[t.dataset.id] || {};
+    r[t.dataset.k] = t.value; r.at = new Date().toISOString().slice(0, 16).replace('T', ' ');
+    save(); render();
+  });
+  const rows = () => C.map(([ph, id, title]) => { const r = st.r[id] || {}; return [id, ph, title, (RES.find(x => x[0] === (r.res || '')) || RES[0])[1], r.note || '', r.at || '']; });
+  document.getElementById('csv').onclick = () => {
+    const q = v => '"' + String(v).replace(/"/g, '""') + '"';
+    const text = '﻿' + [['Tester', st.tester || ''], ['Environment', st.env || ''], [], ['ID', 'Phase', 'Case', 'Result', 'Note', 'Time']].concat(rows()).map(r => r.map(q).join(',')).join('\r\n') + '\r\n';
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([text], { type: 'text/csv' }));
+    a.download = 'vds-planner-live-test.csv'; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+  document.getElementById('json').onclick = () => {
+    const text = JSON.stringify({ tester: st.tester || '', environment: st.env || '', results: rows().map(r => ({ id: r[0], phase: r[1], case: r[2], result: r[3], note: r[4], time: r[5] })) }, null, 2);
+    (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(() => alert('Results copied as JSON.'), () => prompt('Copy the results:', text));
+  };
+  document.getElementById('clear').onclick = () => { if (confirm('Clear all results in this browser?')) { st = { r: {} }; save(); render(); } };
+  render();
+})();
+</script>
+</body>
+</html>

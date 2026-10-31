@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VDS Planner troubleshooting</title>
+<style>
+:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b1c1e;--muted:#5f636a;--line:#d9dce1;--soft:#eef0f3;--accent:#005C8A}
+@media (prefers-color-scheme:dark){:root{--bg:#16171a;--panel:#1f2125;--ink:#e7e8ea;--muted:#9a9ea6;--line:#363a41;--soft:#2a2d33;--accent:#7fb0e0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:920px;margin:0 auto;padding:30px 16px 60px}
+.eyebrow{font:12px ui-monospace,Consolas,monospace;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+h1{font-size:28px;margin:4px 0 6px}
+h2{font-size:19px;margin:28px 0 8px;padding-top:10px;border-top:1px solid var(--line)}
+p{margin:6px 0 10px}
+a{color:var(--accent)}
+code{font:13px ui-monospace,Consolas,monospace;background:var(--soft);padding:1px 5px;border-radius:4px}
+pre{font:13px ui-monospace,Consolas,monospace;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto}
+details{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 14px;margin:8px 0}
+summary{cursor:pointer;font-weight:600}
+details p:first-of-type{margin-top:8px}
+@media print{details>*{display:block}details{break-inside:avoid}}
+</style>
+</head>
+<body>
+<main>
+<div class="eyebrow">VDS Planner · troubleshooting and questions</div>
+<h1>Troubleshooting and questions</h1>
+<p><a href="index.html">Documentation home</a></p>
+
+<h2>The planner</h2>
+<details><summary>Save downloads a file. The recent project list is empty.</summary>
+<p>Save to the same file and the recent list use the file access feature of Microsoft Edge and Google Chrome. Other browsers download the project file. Use Edge or Chrome.</p></details>
+<details><summary>A recent project does not open.</summary>
+<p>The file was moved, renamed or deleted, or the browser asks for access again. Select the project again with <b>File</b>, <b>Open project</b>. Remove the old line with <b>Remove from list</b> on the start screen.</p></details>
+<details><summary>The planner offers to restore work at the start.</summary>
+<p>The browser closed with changes that were not saved. Select <b>Restore</b> to open the recovery copy, then save the project. Select <b>Discard</b> to delete the copy.</p></details>
+<details><summary>Commit is not possible.</summary>
+<p>The draft has blocking checks. The Commit button shows their number. Select it, or <b>Draft</b>, <b>Go to the checks</b>. The <a href="rules-reference.html">rules reference</a> tells what to do for each check.</p></details>
+<details><summary>The import says that a sheet is missing.</summary>
+<p>The planner needs the <code>vPort</code> sheet. The other sheets add information: without <code>vNIC</code> the uplinks are not known and rule V-02 blocks, without <code>vHost</code> the ESXi version check is not possible. Export the missing sheets and import all files together.</p></details>
+<details><summary>The import says that the input is from more than one vCenter.</summary>
+<p>A project is for one vCenter. Import the files of one vCenter. Make one project for each vCenter.</p></details>
+<details><summary>Ctrl+N or Ctrl+W does not do what I expect.</summary>
+<p>These keys belong to the browser. Use Ctrl+Alt+N for a new project and <b>File</b>, <b>Close project</b>.</p></details>
+<details><summary>Where does the planner keep my data?</summary>
+<p>In your project file. The browser storage of your computer keeps only the recent project list, the preferences and a recovery copy. The planner sends nothing over the network.</p></details>
+
+<h2>The scripts</h2>
+<details><summary>"The file is not digitally signed" or "running scripts is disabled".</summary>
+<p>Windows blocks files that come from a browser or a file share. Follow the script policy of your organization. To unblock the files of the package:</p>
+<pre>Get-ChildItem -Filter *.ps1 | Unblock-File</pre></details>
+<details><summary>"Invoke-VdsPlan.ps1 is not in the toolkit folder".</summary>
+<p>The launcher looks for the toolkit in the folder of Project settings. Run it with the correct folder:</p>
+<pre>.\Invoke-&lt;draft&gt;-v1.ps1 -ToolkitPath 'D:\Tools\vds-toolkit' -Part Check</pre></details>
+<details><summary>"The plan file changed after the commit".</summary>
+<p>The SHA-256 hash of the plan file is not the hash of the commit. Do not use the file. In the planner, select <b>Generate again</b> next to the version to write the files again.</p></details>
+<details><summary>A PowerCLI command is not found.</summary>
+<p>Install PowerCLI 13 or later, with the VDS module:</p>
+<pre>Install-Module VMware.PowerCLI -Scope CurrentUser</pre></details>
+<details><summary>Where are the logs?</summary>
+<p>In the <code>output</code> folder of the toolkit: a transcript and a CSV log for each run. Keep them with the change record.</p></details>
+<details><summary>How do I go back on a pilot cluster?</summary>
+<p><code>Remove-VdsPlanSwitch.ps1</code> removes a VDS of the plan when no host and no VM uses it. Move the uplinks and the VMkernel adapters back to the standard switch first. The user guide has the steps.</p></details>
+
+<h2>Help</h2>
+<p>If your question is not here, use <b>Help</b>, <b>Send feedback</b> in the planner, or see <a href="feedback.html">feedback</a>.</p>
+</main>
+</body>
+</html>

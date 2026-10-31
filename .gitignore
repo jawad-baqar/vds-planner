@@ -1,0 +1,14 @@
+output/
+dist/
+*.log
+*.transcript.txt
+# never commit environment exports
+*.local.csv
+# VDS Planner projects and packages hold environment data
+*.vdsplan.json
+plan-*.json
+plan-*.json.sha256
+!samples/*.sample.json
+!samples/*.sample.json.sha256
+!samples/*.sample.vdsplan.json
+!samples/demo-package/*

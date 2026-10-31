@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VDS Planner guide</title>
+<style>
+:root{
+  --bg:#f7f7f5; --panel:#fff; --ink:#1b1c1e; --muted:#62656b; --line:#d7d9dd; --soft:#eef0f2;
+  --accent:#2f5d8a; --accent-soft:#e3ecf5; --ok:#2e7d4f; --ok-soft:#e2f2e8; --warn:#9a6a00; --warn-soft:#fbf0d4; --bad:#a63a32; --bad-soft:#f8e3e1;
+  --sans:system-ui,-apple-system,"Segoe UI",sans-serif; --mono:ui-monospace,Consolas,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#16171a; --panel:#1f2125; --ink:#e7e8ea; --muted:#9a9ea6; --line:#363a41; --soft:#2a2d33;
+  --accent:#7fb0e0; --accent-soft:#22344a; --ok:#6cc495; --ok-soft:#1d3428; --warn:#e0b450; --warn-soft:#3a3018; --bad:#ec8a80; --bad-soft:#3d2220;
+}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 var(--sans)}
+.wrap{max-width:980px;margin:0 auto;padding:32px 16px 64px}
+h1{font-size:26px;margin:4px 0}
+h2{font-size:19px;margin:34px 0 8px;padding-top:10px;border-top:1px solid var(--line)}
+h3{font-size:15px;margin:16px 0 4px}
+.eyebrow{font:11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sub{color:var(--muted);max-width:760px}
+code{font-family:var(--mono);font-size:12.5px;background:var(--soft);padding:1px 5px;border-radius:4px}
+pre{background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:10px;overflow-x:auto;font:12.5px/1.5 var(--mono)}
+a{color:var(--accent)}
+.toc{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0;font-size:13px}
+.tldr{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px}
+.tldr ul,.wrap ol{margin:6px 0;padding-left:22px}
+.wrap ol li{margin:4px 0}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--soft);font-weight:600;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+.tag{display:inline-block;font:11px/1.6 var(--mono);padding:0 7px;border-radius:10px;border:1px solid currentColor;white-space:nowrap}
+.t-ok{color:var(--ok);background:var(--ok-soft)} .t-warn{color:var(--warn);background:var(--warn-soft)} .t-bad{color:var(--bad);background:var(--bad-soft)} .t-info{color:var(--accent);background:var(--accent-soft)}
+figure{margin:12px 0;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px;overflow-x:auto}
+figcaption{color:var(--muted);font-size:12.5px;margin-top:6px}
+.note{background:var(--warn-soft);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:8px;padding:10px 14px;margin:12px 0}
+@media print{.toc{display:none} .tbl,figure,pre{break-inside:avoid} .wrap{max-width:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="eyebrow">VDS Planner · operator guide</div>
+<h1>VDS Planner: operator guide</h1>
+<p class="sub">This guide tells the operator how to make the VDS plan of one vCenter with the VDS Planner, and how to apply the plan with PowerShell. All values in this guide are examples.</p>
+
+<nav class="toc">
+  <a href="#summary">Summary</a><a href="#files">Files</a><a href="#workbook">Start from a workbook</a><a href="#before">Before you start</a><a href="#plan">Make the plan</a>
+  <a href="#shared">Shared VDS</a><a href="#vmk">VMkernel adapters</a><a href="#commit">Commit</a><a href="#run">Run the package</a>
+  <a href="#refresh">Inventory refresh</a><a href="#rollback">Rollback</a><a href="#checks">Checks</a><a href="#tests">Tests</a><a href="#security">Security</a><a href="#limits">Limits</a>
+</nav>
+
+<section id="summary" class="tldr">
+<b>Summary</b>
+<ul>
+  <li>The planner is one HTML file. Open it in Microsoft Edge. It needs no install and no server. It cannot connect to a network.</li>
+  <li>The input is the inventory workbook (.xlsx) of the vCenter, full or only its network sheets, CSV exports of those sheets, or the export of <code>Export-VssLayout.ps1</code> (T-01). The planner reads the workbook on this computer and makes the project file (JSON). It does not change the inventory.</li>
+  <li>A project holds one vCenter. Each draft tab is one plan. A draft can have many VDS. A VDS can be for one cluster (the standard) or for more clusters (V-08 only).</li>
+  <li>A commit makes a package of four files. <code>Invoke-VdsPlan.ps1</code> applies the package. It stops if the plan file changed after the commit.</li>
+</ul>
+</section>
+
+<h2 id="files">1. Files</h2>
+<div class="tbl"><table>
+<thead><tr><th>File</th><th>Purpose</th><th>Where</th></tr></thead>
+<tbody>
+<tr><td><code>planner\vds-planner.html</code></td><td>The planner</td><td>Toolkit</td></tr>
+<tr><td><code>scripts\inventory\Export-VssLayout.ps1</code></td><td>Collects the inventory from vCenter (read only)</td><td>Toolkit</td></tr>
+<tr><td><code>scripts\inventory\Export-PlannerInventory.ps1</code></td><td>Makes the planner input and a project file from an inventory workbook, with no vCenter</td><td>Toolkit</td></tr>
+<tr><td><code>scripts\inventory\Export-PlannerPreload.ps1</code></td><td>Runs the conversion and the simulation for all vCenters and writes a start page</td><td>Toolkit</td></tr>
+<tr><td><code>tests\Invoke-InventorySimulation.ps1</code></td><td>Simulates the change of a project against a copy of its inventory and writes a readiness report</td><td>Toolkit</td></tr>
+<tr><td><code>scripts\network\Invoke-VdsPlan.ps1</code></td><td>Applies one VDS of a committed plan</td><td>Toolkit</td></tr>
+<tr><td><code>scripts\network\Get-VdsPlanPreflight.ps1</code></td><td>Read-only checks of a plan against the vCenter, before the change window</td><td>Toolkit</td></tr>
+<tr><td><code>scripts\network\Remove-VdsPlanSwitch.ps1</code></td><td>Removes a VDS of the plan when nothing uses it (pilot rollback)</td><td>Toolkit</td></tr>
+<tr><td><code>tests\Invoke-OfflineTests.ps1</code>, <code>tests\Test-PowerCliParameters.ps1</code></td><td>Tests that need no vCenter</td><td>Toolkit</td></tr>
+<tr><td><code>scripts\lib\VdsPlan.psm1</code></td><td>Checks the hash and the content of a plan file</td><td>Toolkit</td></tr>
+<tr><td><code>&lt;site&gt;.vdsplan.json</code></td><td>Project file: inventory, drafts, committed versions</td><td>Your environment only</td></tr>
+<tr><td><code>plan-&lt;draft&gt;-v&lt;n&gt;.json</code> and <code>.json.sha256</code></td><td>Committed plan and its SHA-256 hash</td><td>Your environment only</td></tr>
+<tr><td><code>Invoke-&lt;draft&gt;-v&lt;n&gt;.ps1</code></td><td>Launcher: asks for the credential and runs <code>Invoke-VdsPlan.ps1</code></td><td>Your environment only</td></tr>
+<tr><td><code>plan-&lt;draft&gt;-v&lt;n&gt;-report.html</code></td><td>Report for the change record: plan tables and run steps</td><td>Your environment only</td></tr>
+</tbody></table></div>
+<p>To try the planner, open <code>samples\site-a.sample.vdsplan.json</code> with <b>Open project</b>. The sample package is in <code>samples\demo-package</code>.</p>
+
+<h2 id="workbook">2. Start from an inventory workbook</h2>
+<p>If an inventory workbook (.xlsx) of each vCenter is available, the planner needs no connection to vCenter to start. There are two methods. Both give the same inventory.</p>
+<h3>Method A: in the planner</h3>
+<ol>
+  <li>Open <code>planner\vds-planner.html</code> in Edge. Select <b>Import inventory</b>.</li>
+  <li>Select the workbook of one vCenter. You can select the full workbook, a workbook with only the network sheets, or CSV exports of the sheets (one file for each sheet, with a comma, semicolon or tab between the values). The planner finds each sheet by its name, by the file name or by its columns. It ignores the other sheets.</li>
+  <li>The <b>Inventory workbook</b> window shows the sheets that it found, the number of clusters, hosts, switches to convert and port groups, and notes about missing sheets:
+    <div class="tbl"><table>
+    <thead><tr><th>Sheet</th><th>The planner uses it for</th><th>If the sheet is missing</th></tr></thead>
+    <tbody>
+    <tr><td><code>vPort</code></td><td>Port groups, VLANs, security and teaming</td><td>Necessary. The planner cannot make the project.</td></tr>
+    <tr><td><code>vNIC</code></td><td>Uplinks and NIC speeds</td><td>Each VDS has no uplink. Rule V-02 blocks the commit.</td></tr>
+    <tr><td><code>vSwitch</code></td><td>Standard switches and their MTU</td><td>The switches come from the port groups. The MTU is not known.</td></tr>
+    <tr><td><code>vHost</code></td><td>Clusters, datacenters, ESXi versions, vCenter name</td><td>Clusters and datacenters come from the network sheets. The ESXi version check is not possible.</td></tr>
+    <tr><td><code>vSC_VMK</code></td><td>VMkernel port groups</td><td>The VMkernel port groups are not marked.</td></tr>
+    <tr><td><code>dvSwitch</code>, <code>dvPort</code></td><td>Port group names that existing VDS use</td><td>The planner cannot find names already in use. <code>Invoke-VdsPlan.ps1</code> still checks them before a change.</td></tr>
+    </tbody></table></div></li>
+  <li>Enter the site name and select <b>Make the project</b> (or <b>New project from the workbook</b>). The project gets the same two drafts as method B. If a project is open, <b>Refresh the inventory of this project</b> shows the differences first and keeps the drafts and the zones.</li>
+  <li>Select <b>Save the project file</b>. The project file (<code>&lt;site&gt;.vdsplan.json</code>) holds the inventory and the drafts. Keep it in your environment.</li>
+</ol>
+<p>The input of one project must be from one vCenter. The planner blocks input from more than one vCenter. Hosts with no cluster are not in the plan.</p>
+<h3>Method B: the preload script, with the simulation</h3>
+<ol>
+  <li>Run the preload for all vCenters:
+<pre>.\scripts\inventory\Export-PlannerPreload.ps1 -Workbook .\inv\prd.xlsx, .\inv\dr.xlsx -Site PRD, DR -OutputFolder 'D:\VDS Planner'</pre></li>
+  <li>Open <code>index.html</code> in the output folder. It shows each site, the number of switches to convert and the result of the simulation.</li>
+  <li>Read the readiness report of the site. It shows the VDS that are ready, the blocking items by rule, the duplicate names, the name clashes and the hosts that miss port groups.</li>
+  <li>In the planner, select <b>Open project</b> and select <code>&lt;site&gt;\inventory\&lt;site&gt;.vdsplan.json</code>. The project has two drafts:
+    <ul><li><i>Standard layout (V-01)</i>: one VDS for each standard switch, with the port group names of the standard switches.</li>
+    <li><i>Standard layout (V-01), names fixed</i>: the same, with names that vCenter accepts. A name that is on one VDS with different VLANs gets the VLAN at the end. A name that is on more than one VDS of a datacenter gets the cluster name in front.</li></ul></li>
+  <li>Continue with section 4. The inventory of the workbook has the same columns as the export of <code>Export-VssLayout.ps1</code>.</li>
+</ol>
+<div class="note"><b>Port group names in one datacenter.</b> vCenter needs a unique distributed port group name in a datacenter. When many clusters of one datacenter have the same port group names, one VDS for each cluster (V-01) is possible only with new names. The draft <i>names fixed</i> gives these names. The VM moves use the new names, and the VMs show them. A shared VDS for clusters with the same switches (V-08) keeps the names. This is a design decision.</div>
+
+<h2 id="before">3. Before you start (live export)</h2>
+<ol>
+  <li>Install PowerCLI 13 or later on the jump host. Copy the toolkit to a folder, for example <code>C:\Tools\vds-toolkit</code>.</li>
+  <li>Connect to the vCenter. Run <code>Export-VssLayout.ps1</code> for each cluster:
+<pre>Connect-VIServer -Server vc01.example.local -Credential (Get-Credential)
+.\scripts\inventory\Export-VssLayout.ps1 -Cluster Cluster01</pre>
+  The script writes <code>Cluster01_hosts.csv</code>, <code>Cluster01_portgroups.csv</code> and <code>Cluster01_vdsplan.csv</code> to <code>.\output\</code>. The files include the datacenter of the cluster and the ESXi version of each host. The planner uses them for the port group name check and the version check.</li>
+  <li>Open <code>planner\vds-planner.html</code> in Edge. Enter the vCenter name and the site.</li>
+  <li>Select <b>Import inventory</b>. Select the <code>_vdsplan.csv</code> and <code>_hosts.csv</code> files of all clusters. The planner does not need <code>_portgroups.csv</code>. An inventory workbook is also possible (section 2).</li>
+  <li>In the inventory column, set the security zone of each cluster (Internal, DMZ and more). The shared VDS check (V-08) uses the zone.</li>
+  <li>Select <b>Settings</b>. Enter the toolkit folder on the jump host and the vCenter user. The default user is <code>administrator@vsphere.local</code>.</li>
+  <li>Select <b>Save project</b>. Save the project file in your environment.</li>
+</ol>
+
+<h2 id="plan">4. Make the plan</h2>
+<p><b>Help on the page.</b> The guide bar at the top of the planner stays in view. It shows eight steps: Inventory, vCenter, Draft, Add VDS, Checks, Commit, Save and Run. A green step is done. The blue step is the next action. The line <b>Next:</b> tells you what to do, and its button does it or shows you where it is. The <b>Commit</b> button is always at the right of the guide bar. Put the mouse pointer on a button or a field: a help bubble tells you what it does. The bubble goes away when the pointer moves. <b>? Help</b> starts the guided tour again and turns the help bubbles on or off. The planner shows the tour offer when you open it for the first time.</p>
+<p><b>Menus and files.</b> The menu bar works like a desktop application. <b>File</b>: New project (Ctrl+Alt+N), Open project (Ctrl+O), Open the demo project, Save (Ctrl+S), Save as (Ctrl+Shift+S), Close project, Import inventory (Ctrl+I), Project settings and the recent projects. <b>Edit</b>: Undo (Ctrl+Z), Redo (Ctrl+Y), Find port groups (Ctrl+F), Preferences. <b>Draft</b>: new, duplicate, rename (F2), delete, Add all switches, Fix names, Commit (Ctrl+Enter). <b>View</b>: Environment and drafts, expand and collapse, theme (system, light, dark), help bubbles. <b>Tools</b>: self-test. <b>Help</b>: how to use, tour, keyboard shortcuts, the operator guide and About. When no project is open, the start screen shows the first steps and the recent projects. The status bar at the bottom shows the file, unsaved changes, the vCenter, the open draft and its blocking checks. Undo never removes the record of a committed version. If the browser closes with changes that are not saved, the planner offers a recovery copy at the next start. The recent list, the preferences and the recovery copy are in the browser storage of this computer only. A release with a brand shows a logo and a light watermark. Edit, Preferences, Branding turns them off. The generated report then has no logo. Recent projects and Save to the same file need Microsoft Edge or Google Chrome. Other browsers download the file.</p>
+<p><b>The draft view.</b> Each VDS shows as a diagram, like the switch view of a host in the vSphere Client. The port groups are on the left, with the VLAN, the port binding and the VMkernel ports. Each port group has a line to the bus. The <b>Uplinks</b> box is on the right, with dvUplink1, dvUplink2 and more. It shows the physical adapters (for example <code>vmnic1 (6)</code>) that each uplink gets on the hosts. <b>Physical adapters of n hosts</b> opens a table for each host. The map is the result of <code>Move-HostToVds.ps1</code>: stage 1 moves vmnic1 to dvUplink1, and stage 2 moves the other adapters. When you select a port group, its line and its box are orange, and the Uplinks box shows each uplink as <span class="tag t-ok">Active</span>, <span class="tag t-warn">Standby</span> or <span class="tag t-info">Unused</span> for that port group. The Uplinks box and the VDS name stay in view when you scroll a long list. The arrow next to the VDS name folds the VDS. <b>Expand all</b> and <b>Collapse all</b> do this for all VDS. The filter shows only the port groups with a name or a VLAN ID that contains the text.</p>
+<p>The <b>Environment</b> tab shows each standard switch of each cluster and its status: <span class="tag t-bad">not planned</span>, <span class="tag t-warn">in draft</span> or <span class="tag t-ok">committed</span>. Use it to make sure that the full environment has a plan.</p>
+<ol>
+  <li>Select a draft tab, or <b>+ New draft</b>. Double-click a tab to rename it. <b>Duplicate draft</b> makes a copy to try a different plan.</li>
+  <li>In the inventory column, select <b>Add all switches</b>, or select <b>Add</b> next to one switch. The planner makes the VDS with the name of rule V-01 (<code>&lt;cluster&gt;-vds01</code> for vSwitch0). It adds all port groups of that switch.</li>
+  <li>Select a port group to set it. The settings are in the right column:
+    <div class="tbl"><table>
+    <thead><tr><th>Setting</th><th>Values</th><th>Default</th></tr></thead>
+    <tbody>
+    <tr><td>Create this port group</td><td>On or off</td><td>On</td></tr>
+    <tr><td>Name on the VDS</td><td>Text, 80 characters or less</td><td>Name of the standard port group</td></tr>
+    <tr><td>VLAN type</td><td>None, VLAN, VLAN trunking</td><td>From inventory. VLAN 4095 becomes trunk 0-4094.</td></tr>
+    <tr><td>Port binding</td><td>Static, Ephemeral</td><td>Static</td></tr>
+    <tr><td>Number of ports</td><td>1 to 8192 (static only)</td><td>8</td></tr>
+    <tr><td>Port allocation</td><td>Elastic, Fixed (static only)</td><td>Elastic</td></tr>
+    <tr><td>Load balancing</td><td>Originating virtual port, source MAC hash, IP hash, physical NIC load, explicit failover order</td><td>Originating virtual port (V-09)</td></tr>
+    <tr><td>Failover order</td><td>Active, Standby or Unused for each uplink</td><td>All uplinks active</td></tr>
+    <tr><td>Security</td><td>Promiscuous mode, MAC address changes, forged transmits: Reject or Accept</td><td>Reject</td></tr>
+    </tbody></table></div>
+  </li>
+  <li><b>Copy these settings to all port groups</b> copies the binding, ports, allocation, teaming and security to the other port groups of the VDS. It does not copy the name or the VLAN.</li>
+  <li>A large VDS can have hundreds of port groups that are not on all hosts (V-05). When the network team confirms the VLAN trunk for a VDS, select the VDS header and set the trunk check for all of them at one time.</li>
+  <li><b>Fix names</b> on the draft renames the duplicate names and the names that clash in a datacenter, with the same rules as the draft <i>names fixed</i>.</li>
+  <li><b>+ Port group</b> adds a port group that is not in the inventory, for example the ephemeral port group for the vCenter VM (V-09).</li>
+  <li>Select the VDS header to set the VDS name, the version (8.0.3 is the design value) and the MTU (1500 is the design value). A new vMotion or Provisioning adapter sets the VDS MTU to 9000.</li>
+  <li>The VDS version must not be later than the ESXi version of all hosts. A host with ESXi 8.0.2 cannot join a VDS 8.0.3. The planner blocks this. Upgrade the host or select VDS 8.0.0.</li>
+  <li>A distributed port group name must be unique in its datacenter. One VDS for each cluster often gives the same names (for example <i>Management Network</i>) on two VDS in one datacenter. The planner shows this. Select the VDS header, then <b>Add a name prefix</b>, for example <code>Cluster01-</code>. <code>Invoke-VdsPlan.ps1</code> also stops before any change if a name is on another VDS in the datacenter.</li>
+</ol>
+
+<h2 id="shared">5. Shared VDS for more than one cluster (V-08)</h2>
+<p>The standard is one VDS for each standard switch of each cluster (V-01). One VDS can also serve more than one cluster. The planner checks two kinds of conditions:</p>
+<div class="tbl"><table>
+<thead><tr><th>Condition</th><th>Kind</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td>The clusters are in the same datacenter (a VDS is in one datacenter only)</td><td>Necessary</td><td>Block</td></tr>
+<tr><td>The clusters have a security zone, and it is the same zone. DMZ and internal clusters never share a VDS.</td><td>Necessary</td><td>Block</td></tr>
+<tr><td>Each cluster has two uplinks or more on the switch (V-02)</td><td>Necessary</td><td>Block</td></tr>
+<tr><td>The uplink names are the same</td><td>Design decision</td><td>You accept the difference</td></tr>
+<tr><td>The NIC speed is the same</td><td>Design decision</td><td>You accept the difference</td></tr>
+<tr><td>The port group names and VLANs are the same</td><td>Design decision</td><td>You accept the difference</td></tr>
+</tbody></table></div>
+<p>There are three methods to put a cluster on a VDS, or to move it from one VDS to another:</p>
+<ol>
+  <li><b>Drag</b> the switch of the cluster from the inventory column onto the VDS. Drop it next to the VDS boxes to give the cluster a VDS of its own.</li>
+  <li>Select <b>+ Cluster</b> on the VDS. The planner shows the switch of each other cluster, where it is now, and the result of the check. Select <b>Add</b>, or <b>Move here</b> for a cluster that is in another VDS.</li>
+  <li>Select the VDS name. In the settings panel, each cluster has a <b>Move ... to</b> list: another VDS of the draft, or <b>A VDS of its own</b>. <b>Remove</b> takes the cluster out of the VDS. Its switch is then free in the inventory.</li>
+</ol>
+<p>If the clusters are not the same, the planner shows the differences. Select <b>Accept and add</b> (or <b>Accept and move</b>) to continue. Then:</p>
+<ul>
+  <li>The VDS gets the port groups of all its clusters. A port group that is on all clusters is one port group. A port group that is not on all clusters gets the flag <i>Not on &lt;cluster&gt;</i> and needs the VLAN trunk check (V-05).</li>
+  <li>A port group name with a different VLAN on two clusters is on the VDS two times. The name check blocks this. Select <b>Fix names</b> to add the VLAN to the names.</li>
+  <li>The VDS gets the largest number of uplinks of its clusters. On hosts with fewer adapters, the last uplinks stay empty. The planner warns.</li>
+  <li>When a cluster leaves a VDS, the port groups that only that cluster had leave the VDS too. A VDS with no cluster leaves the draft.</li>
+  <li>The plan file records <code>v08Check: accepted</code> and the accepted differences (<code>v08Accepted</code>). The report shows them. <code>Test-VdsPlan</code> refuses a VDS for more than one cluster that has neither <code>pass</code> nor <code>accepted</code> with a list.</li>
+</ul>
+<p>If the inventory changes later and new differences show, the commit is blocked until you select <b>Accept the differences</b> on the VDS again, or move the cluster. Change the VDS name if necessary, for example to a name for all its clusters.</p>
+
+<h2 id="vmk">6. New VMkernel adapters</h2>
+<p>The VMkernel adapters of the inventory are fixed. The planner can add new adapters, for example a dedicated vMotion adapter (RW-07).</p>
+<ol>
+  <li>Select <b>+ VMkernel</b> on the VDS. The planner adds a vMotion adapter and a dedicated port group with explicit failover order.</li>
+  <li>Set the service (vMotion, Provisioning, Management, vSAN, FaultTolerance, Replication, NfcReplication) and the TCP/IP stack. The vMotion stack is for vMotion only. The Provisioning stack is for Provisioning only. The stack cannot change after ESXi creates the adapter.</li>
+  <li>Select the port group, or <b>+ New dedicated port group</b>. Set the VLAN and the failover order on that port group.</li>
+  <li>Set the MTU. The default MTU is 9000 for vMotion and Provisioning, and 1500 for the other services. Change it if necessary. If the adapter MTU is larger than the VDS MTU, the planner sets the VDS MTU to the same value. The physical switches must then support that MTU on all uplinks of all hosts.</li>
+  <li>For vMotion: select <b>Turn off vMotion on vmk0</b> to stop vMotion on the management adapter after the new adapter is up.</li>
+  <li>Enter a static IP address and a subnet mask for each host. <b>Fill from a first IP</b> gives the next addresses to the next hosts. <b>Import IP plan CSV</b> reads a CSV with the columns <code>Host</code>, <code>IP</code>, <code>SubnetMask</code>. DHCP is not permitted (RW-09).</li>
+</ol>
+
+<h2 id="commit">7. Commit and generate the package</h2>
+<ol>
+  <li>Correct all <span class="tag t-bad">block</span> items in the checks panel. While a block item exists, the Commit button shows the number of blocking items and takes you to the checks. Read the <span class="tag t-warn">warn</span> and <span class="tag t-info">info</span> items.</li>
+  <li>Select <b>Commit</b> at the right of the guide bar (or <b>Commit and generate package</b> at the bottom of the page). The commit window shows the vCenter, the vCenter user, the toolkit folder, the checks and the 4 files that the planner writes. Enter your name. Select <b>Commit and select a folder</b>.</li>
+  <li>Select an empty folder for the package. A browser with no folder picker puts the files in the Downloads folder.</li>
+  <li>The <b>Package</b> window opens. It shows the folder, the 4 files (select <b>View</b> to read a file, or <b>Open</b> for the report) and the PowerShell commands to run on the jump host, each with a <b>Copy</b> button. For security the browser gives the planner only the folder name, not the full path.</li>
+  <li>Select <b>Save project</b>. The committed version is in the project file only after you save it.</li>
+  <li>A committed version does not change. To change the plan, edit the draft and commit again. This makes version n+1.</li>
+  <li><b>How to run</b> next to a version opens the Package window again. <b>Generate again</b> writes the files of a committed version again. The plan file and its hash are the same as at the commit.</li>
+</ol>
+
+<h2 id="run">8. Run the package</h2>
+<figure>
+<svg viewBox="0 0 960 150" width="100%" style="min-width:720px" role="img" aria-label="Run order">
+  <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker></defs>
+  <g style="color:var(--muted)" stroke="currentColor" stroke-width="1.5" fill="none" marker-end="url(#ar)">
+    <path d="M160,60H185"/><path d="M345,60H370"/><path d="M530,60H555"/><path d="M715,60H740"/>
+  </g>
+  <g font-size="12.5" font-family="system-ui,Segoe UI,sans-serif">
+    <rect x="10" y="20" width="150" height="80" rx="8" fill="var(--accent-soft)" stroke="var(--accent)"/>
+    <text x="20" y="42" font-weight="600" fill="var(--ink)">1. Launcher</text><text x="20" y="62" fill="var(--muted)">-WhatIf, then real</text><text x="20" y="80" fill="var(--muted)">VDS, port groups, hosts</text>
+    <rect x="190" y="20" width="155" height="80" rx="8" fill="var(--soft)" stroke="var(--line)"/>
+    <text x="200" y="42" font-weight="600" fill="var(--ink)">2. Move-HostToVds</text><text x="200" y="62" fill="var(--muted)">Stage 1, one host</text><text x="200" y="80" fill="var(--muted)">at a time</text>
+    <rect x="375" y="20" width="155" height="80" rx="8" fill="var(--soft)" stroke="var(--line)"/>
+    <text x="385" y="42" font-weight="600" fill="var(--ink)">3. Move-VmNetwork</text><text x="385" y="62" fill="var(--muted)">Each port group</text><text x="385" y="80" fill="var(--muted)">rollback CSV</text>
+    <rect x="560" y="20" width="155" height="80" rx="8" fill="var(--soft)" stroke="var(--line)"/>
+    <text x="570" y="42" font-weight="600" fill="var(--ink)">4. Move-HostToVds</text><text x="570" y="62" fill="var(--muted)">Stage 2, one host</text><text x="570" y="80" fill="var(--muted)">vmk + other uplinks</text>
+    <rect x="745" y="20" width="200" height="80" rx="8" fill="var(--accent-soft)" stroke="var(--accent)"/>
+    <text x="755" y="42" font-weight="600" fill="var(--ink)">5. Launcher -Part VMkernel</text><text x="755" y="62" fill="var(--muted)">-VMHost, one host</text><text x="755" y="80" fill="var(--muted)">new VMkernel adapters</text>
+  </g>
+</svg>
+<figcaption>Steps 1 and 5 use the package. Steps 2 to 4 use the toolkit scripts T-03 and T-04. The report of the package lists the same steps.</figcaption>
+</figure>
+<ol>
+  <li>Put the four package files in one folder on the jump host.</li>
+  <li>Before the change window, run the preflight. It is read-only. It shows <b>READY</b> or a list of blocking items.
+<pre>.\Invoke-shared-db-vds-v1.ps1 -Part Check</pre></li>
+  <li>Run the launcher with <code>-WhatIf</code>. It asks for the credential, connects and shows each step. It does not change anything.
+<pre>.\Invoke-shared-db-vds-v1.ps1 -WhatIf</pre></li>
+  <li>Examine the output. A warning for a host with a different uplink layout (V-06) means that you must correct that host first.</li>
+  <li>Under the change control of your organization, run the launcher with no <code>-WhatIf</code>. Answer each confirmation prompt. The script creates the VDS and the port groups and adds the hosts with no uplink. A VDS or a port group that exists is not changed.</li>
+  <li>Move each host and the VM networks with <code>Move-HostToVds.ps1</code> and <code>Move-VmNetworkToVds.ps1</code>.</li>
+  <li>If the plan has new VMkernel adapters: for each host, after stage 2, run:
+<pre>.\Invoke-shared-db-vds-v1.ps1 -Part VMkernel -VMHost esx11.example.local -WhatIf
+.\Invoke-shared-db-vds-v1.ps1 -Part VMkernel -VMHost esx11.example.local</pre></li>
+  <li>Keep the transcripts and the CSV logs of <code>.\output\</code>, and the report of the package, with the change record.</li>
+</ol>
+<div class="note"><b>Stop conditions.</b> <code>Invoke-VdsPlan.ps1</code> does all read-only checks before it changes anything. It stops when the hash of the plan file is not correct, when the plan has errors, when the session is connected to a different vCenter, when a cluster is missing, when the clusters of a VDS are in more than one datacenter, when a host is not connected, when a host runs an earlier ESXi version than the VDS, when a VDS exists with different uplinks, when a port group name is on another VDS in the datacenter, or when a planned IP address is in use on another host.</div>
+
+<h2 id="refresh">9. Inventory refresh</h2>
+<ol>
+  <li>Run <code>Export-VssLayout.ps1</code> again for the clusters that changed.</li>
+  <li>Select <b>Import inventory</b> and select the new files. The planner shows the changes: port groups and hosts that are <span class="tag t-ok">added</span>, <span class="tag t-bad">removed</span> or <span class="tag t-warn">changed</span>.</li>
+  <li>Select <b>Apply</b>. The checks of each draft show the VDS that need an update.</li>
+  <li>Select the VDS header, then <b>Sync from inventory</b>. The planner adds the new port groups, stops the port groups that are not in the inventory now, and updates the uplinks. A VLAN that you changed stays as you set it.</li>
+  <li>For a VMkernel adapter, select <b>Update host list</b>.</li>
+</ol>
+
+<h2 id="rollback">10. Rollback in the pilot</h2>
+<ol>
+  <li>Move the VM adapters back: <code>Move-VmNetworkToVds.ps1 -RollbackCsv &lt;file&gt;</code>.</li>
+  <li>Move the VMkernel adapters and the uplinks of each host back to the standard switch (vSphere Client, one host at a time).</li>
+  <li>Remove the VDS. The script removes it only when no host has an uplink or a VMkernel adapter on it, and no VM uses its port groups:
+<pre>.\scripts\network\Remove-VdsPlanSwitch.ps1 -PlanFile .\plan-shared-db-vds-v1.json -VdsName DB-shared-vds01 -WhatIf
+.\scripts\network\Remove-VdsPlanSwitch.ps1 -PlanFile .\plan-shared-db-vds-v1.json -VdsName DB-shared-vds01</pre></li>
+</ol>
+
+<h2 id="checks">11. Checks</h2>
+<div class="tbl"><table>
+<thead><tr><th>Check</th><th>Rule</th><th>Level</th></tr></thead>
+<tbody>
+<tr><td>VDS with fewer than two uplinks</td><td>V-02</td><td><span class="tag t-bad">block</span></td></tr>
+<tr><td>Port group on some hosts only, VLAN trunk not confirmed</td><td>V-05</td><td><span class="tag t-bad">block</span></td></tr>
+<tr><td>Hosts with a different uplink layout</td><td>V-06</td><td><span class="tag t-warn">warn</span></td></tr>
+<tr><td>Shared VDS with switches that are not the same, or different zones</td><td>V-08</td><td><span class="tag t-bad">block</span></td></tr>
+<tr><td>MTU not 1500, no ephemeral port group for the vCenter VM</td><td>V-09</td><td><span class="tag t-info">info</span></td></tr>
+<tr><td>VDS MTU above 1500 for jumbo frames on the VMkernel adapters: confirm the physical switch MTU</td><td>V-09</td><td><span class="tag t-warn">warn</span></td></tr>
+<tr><td>Name, VLAN, trunk range, ports, uplink errors</td><td>-</td><td><span class="tag t-bad">block</span></td></tr>
+<tr><td>VLAN not the same as the standard port group, security setting Accept</td><td>-</td><td><span class="tag t-warn">warn</span></td></tr>
+<tr><td>VMkernel: no port group, wrong stack, MTU above the VDS MTU, IP or mask not valid, IP used two times</td><td>RW-07, RW-09</td><td><span class="tag t-bad">block</span></td></tr>
+<tr><td>Inventory changed after the VDS was added</td><td>-</td><td><span class="tag t-warn">warn</span> or <span class="tag t-bad">block</span></td></tr>
+<tr><td>Host ESXi version earlier than the VDS version</td><td>V-09</td><td><span class="tag t-bad">block</span></td></tr>
+<tr><td>Port group name on another VDS of the same datacenter: in the same draft / in another draft</td><td>-</td><td><span class="tag t-bad">block</span> / <span class="tag t-warn">warn</span></td></tr>
+<tr><td>Shared VDS for clusters in different datacenters</td><td>V-08</td><td><span class="tag t-bad">block</span></td></tr>
+</tbody></table></div>
+<p>The planner does not include the switches that rules V-07 and V-10 remove (iDRAC USB, BMC and minority switches with no uplink). <code>Export-VssLayout.ps1</code> removes them from the export.</p>
+
+<h2 id="tests">12. Tests</h2>
+<p>Run these tests on the jump host before the lab test. They need no vCenter.</p>
+<div class="tbl"><table>
+<thead><tr><th>Test</th><th>Command</th><th>Expected result</th></tr></thead>
+<tbody>
+<tr><td>Planner self-test</td><td>Open the planner in Edge, select <b>Self-test</b></td><td>All passed</td></tr>
+<tr><td>Simulation of a project</td><td><code>.\tests\Invoke-InventorySimulation.ps1 -ProjectFile &lt;site&gt;.vdsplan.json -OutputFolder &lt;folder&gt;</code></td><td>Readiness report</td></tr>
+<tr><td>Scripts against a fake vCenter</td><td><code>.\tests\Invoke-OfflineTests.ps1</code> (PowerShell 5.1 or 7)</td><td>0 failed</td></tr>
+<tr><td>PowerCLI parameters</td><td><code>.\tests\Test-PowerCliParameters.ps1</code> (needs PowerCLI with the VDS module)</td><td>0 wrong</td></tr>
+<tr><td>Pester (optional)</td><td><code>Invoke-Pester .\tests</code> (Pester 5)</td><td>All passed</td></tr>
+</tbody></table></div>
+<p>The live test checklist is <code>docs\vds-planner-live-test.html</code>.</p>
+
+<h2 id="security">13. Security</h2>
+<ul>
+  <li>The planner page has a content security policy that blocks all network connections. It loads no external file.</li>
+  <li>No file holds a credential. The launcher asks with <code>Get-Credential</code> at run time.</li>
+  <li>The project file and the package hold environment data. Keep them in your environment. Do not put them in the toolkit repository.</li>
+  <li>The SHA-256 hash file protects the plan file. If somebody edits the plan file, <code>Invoke-VdsPlan.ps1</code> stops.</li>
+</ul>
+
+<h2 id="limits">14. Limits of this version</h2>
+<ul>
+  <li>The scripts have not run against a vCenter. Run the live test checklist on a lab vCenter before the pilot.</li>
+  <li>The planner does not set a gateway for the vMotion or Provisioning TCP/IP stack. Use one layer 2 network for these adapters, or set the gateway on the host.</li>
+  <li>Private VLANs, traffic shaping and NetFlow are not in the planner.</li>
+  <li>The planner does not remove a VDS or a port group. To roll back, use the rollback CSV of <code>Move-VmNetworkToVds.ps1</code> and remove the VDS in vCenter.</li>
+</ul>
+
+</div>
+</body>
+</html>

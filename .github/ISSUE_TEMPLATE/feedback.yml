@@ -1,0 +1,70 @@
+name: Feedback
+description: An idea, a request, a question, or something that works well. We use each item for the next versions.
+title: "[Feedback] "
+labels: ["feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. Do not put customer data, host names, IP addresses, VLAN IDs, inventory files, project files or credentials here. Use made-up values, for example `esx01.example.local`.
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options:
+        - Idea or request
+        - Problem
+        - Question
+        - Something that works well
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Inventory import
+        - Drafts and VDS
+        - Topology view
+        - Checks and design rules
+        - Commit and package
+        - PowerShell scripts
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: rating
+    attributes:
+      label: How useful is the planner?
+      options:
+        - 5 - very useful
+        - "4"
+        - "3"
+        - "2"
+        - 1 - not useful
+    validations:
+      required: false
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: What did you do, what did you expect and what happened? For an idea, which problem does it solve?
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: Contact (optional)
+      description: How we can ask you questions.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Help, About in the planner.
+      placeholder: VDS Planner 1.0.0
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      placeholder: Microsoft Edge 130

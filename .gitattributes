@@ -1,0 +1,5 @@
+# plan files are hashed: keep their bytes
+samples/*.json -text
+samples/*.sha256 -text
+samples/demo-package/* -text
+samples/*.sample.vdsplan.json -text

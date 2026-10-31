@@ -1,0 +1,99 @@
+{
+  "format": "vdsplan-run/1",
+  "vcenter": "vc01.example.local",
+  "site": "Site A",
+  "draft": "Cluster01",
+  "draftId": "dsample1",
+  "version": 1,
+  "committedBy": "Sample Operator",
+  "committedAt": "2026-01-01T00:00:00.000Z",
+  "vds": [
+    {
+      "name": "Cluster01-vds01",
+      "clusters": [
+        "Cluster01"
+      ],
+      "sourceSwitch": "vSwitch0",
+      "uplinkCount": 2,
+      "version": "8.0.3",
+      "mtu": 1500,
+      "shared": false,
+      "v08Check": "n/a",
+      "portGroups": [
+        {
+          "name": "Management Network",
+          "vlanType": "vlan",
+          "vlan": 10,
+          "trunk": "",
+          "binding": "static",
+          "ports": 8,
+          "allocation": "elastic",
+          "loadBalancing": "ExplicitFailover",
+          "active": [
+            "dvUplink1"
+          ],
+          "standby": [
+            "dvUplink2"
+          ],
+          "allowPromiscuous": false,
+          "macChanges": false,
+          "forgedTransmits": false
+        },
+        {
+          "name": "vcenter-ephemeral",
+          "vlanType": "vlan",
+          "vlan": 10,
+          "trunk": "",
+          "binding": "ephemeral",
+          "ports": 0,
+          "allocation": "elastic",
+          "loadBalancing": "LoadBalanceSrcId",
+          "active": [
+            "dvUplink1",
+            "dvUplink2"
+          ],
+          "standby": [],
+          "allowPromiscuous": false,
+          "macChanges": false,
+          "forgedTransmits": false
+        },
+        {
+          "name": "App-Web",
+          "vlanType": "vlan",
+          "vlan": 110,
+          "trunk": "",
+          "binding": "static",
+          "ports": 64,
+          "allocation": "elastic",
+          "loadBalancing": "LoadBalanceSrcId",
+          "active": [
+            "dvUplink1",
+            "dvUplink2"
+          ],
+          "standby": [],
+          "allowPromiscuous": false,
+          "macChanges": false,
+          "forgedTransmits": false
+        },
+        {
+          "name": "Trunk-Appliance",
+          "vlanType": "trunk",
+          "vlan": 0,
+          "trunk": "0-4094",
+          "binding": "static",
+          "ports": 8,
+          "allocation": "fixed",
+          "loadBalancing": "LoadBalanceSrcId",
+          "active": [
+            "dvUplink1",
+            "dvUplink2"
+          ],
+          "standby": [],
+          "allowPromiscuous": false,
+          "macChanges": false,
+          "forgedTransmits": false
+        }
+      ]
+    }
+  ]
+}

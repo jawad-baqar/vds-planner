@@ -1,0 +1,962 @@
+{
+  "format": "vdsplan-project/1",
+  "vcenter": "vc01.example.local",
+  "site": "Site A",
+  "settings": {
+    "toolkitPath": "C:\\Tools\\vds-toolkit",
+    "userName": "administrator@vsphere.local"
+  },
+  "inventory": {
+    "clusters": {
+      "Cluster01": {
+        "rows": [
+          {
+            "Cluster": "Cluster01",
+            "Datacenter": "DC-A",
+            "Switch": "vSwitch0",
+            "NewVds": "Cluster01-vds01",
+            "StandardUplinks": "vmnic0 vmnic1",
+            "DeviatingHosts": "",
+            "PortGroup": "Management Network",
+            "Vlan": "10",
+            "HostsWithPortGroup": "4",
+            "HostsWithSwitch": "4",
+            "VdsPortGroup": "Management Network",
+            "Flags": "VMkernel port group"
+          },
+          {
+            "Cluster": "Cluster01",
+            "Datacenter": "DC-A",
+            "Switch": "vSwitch0",
+            "NewVds": "Cluster01-vds01",
+            "StandardUplinks": "vmnic0 vmnic1",
+            "DeviatingHosts": "",
+            "PortGroup": "VM Network",
+            "Vlan": "10",
+            "HostsWithPortGroup": "4",
+            "HostsWithSwitch": "4",
+            "VdsPortGroup": "VM Network",
+            "Flags": ""
+          },
+          {
+            "Cluster": "Cluster01",
+            "Datacenter": "DC-A",
+            "Switch": "vSwitch0",
+            "NewVds": "Cluster01-vds01",
+            "StandardUplinks": "vmnic0 vmnic1",
+            "DeviatingHosts": "",
+            "PortGroup": "App-Web",
+            "Vlan": "110",
+            "HostsWithPortGroup": "4",
+            "HostsWithSwitch": "4",
+            "VdsPortGroup": "App-Web",
+            "Flags": ""
+          },
+          {
+            "Cluster": "Cluster01",
+            "Datacenter": "DC-A",
+            "Switch": "vSwitch0",
+            "NewVds": "Cluster01-vds01",
+            "StandardUplinks": "vmnic0 vmnic1",
+            "DeviatingHosts": "",
+            "PortGroup": "App-Mid",
+            "Vlan": "120",
+            "HostsWithPortGroup": "3",
+            "HostsWithSwitch": "4",
+            "VdsPortGroup": "App-Mid",
+            "Flags": "On 3 of 4 hosts: check the VLAN trunk (V-05)"
+          },
+          {
+            "Cluster": "Cluster01",
+            "Datacenter": "DC-A",
+            "Switch": "vSwitch0",
+            "NewVds": "Cluster01-vds01",
+            "StandardUplinks": "vmnic0 vmnic1",
+            "DeviatingHosts": "",
+            "PortGroup": "Trunk-Appliance",
+            "Vlan": "4095",
+            "HostsWithPortGroup": "4",
+            "HostsWithSwitch": "4",
+            "VdsPortGroup": "Trunk-Appliance",
+            "Flags": "VLAN 4095: use VLAN trunking 0-4094"
+          },
+          {
+            "Cluster": "Cluster01",
+            "Datacenter": "DC-A",
+            "Switch": "vSwitch1",
+            "NewVds": "Cluster01-vds02",
+            "StandardUplinks": "vmnic2 vmnic3",
+            "DeviatingHosts": "esx04.example.local",
+            "PortGroup": "Backup",
+            "Vlan": "300",
+            "HostsWithPortGroup": "4",
+            "HostsWithSwitch": "4",
+            "VdsPortGroup": "Backup",
+            "Flags": ""
+          },
+          {
+            "Cluster": "Cluster01",
+            "Datacenter": "DC-A",
+            "Switch": "vSwitch1",
+            "NewVds": "Cluster01-vds02",
+            "StandardUplinks": "vmnic2 vmnic3",
+            "DeviatingHosts": "esx04.example.local",
+            "PortGroup": "vMotion",
+            "Vlan": "20",
+            "HostsWithPortGroup": "4",
+            "HostsWithSwitch": "4",
+            "VdsPortGroup": "vMotion",
+            "Flags": "VMkernel port group"
+          }
+        ],
+        "hosts": [
+          {
+            "Cluster": "Cluster01",
+            "Datacenter": "DC-A",
+            "Host": "esx01.example.local",
+            "EsxVersion": "8.0.3",
+            "EsxBuild": "24022510",
+            "Switch": "vSwitch0",
+            "Uplinks": "vmnic0 vmnic1",
+            "UplinkCount": "2",
+            "SpeedMbps": "25000",
+            "Mtu": "1500"
+          },
+          {
+            "Cluster": "Cluster01",
+            "Datacenter": "DC-A",
+            "Host": "esx01.example.local",
+            "EsxVersion": "8.0.3",
+            "EsxBuild": "24022510",
+            "Switch": "vSwitch1",
+            "Uplinks": "vmnic2 vmnic3",
+            "UplinkCount": "2",
+            "SpeedMbps": "25000",
+            "Mtu": "1500"
+          },
+          {
+            "Cluster": "Cluster01",
+            "Datacenter": "DC-A",
+            "Host": "esx02.example.local",
+            "EsxVersion": "8.0.3",
+            "EsxBuild": "24022510",
+            "Switch": "vSwitch0",
+            "Uplinks": "vmnic0 vmnic1",
+            "UplinkCount": "2",
+            "SpeedMbps": "25000",
+            "Mtu": "1500"
+          },
+          {
+            "Cluster": "Cluster01",
+            "Datacenter": "DC-A",
+            "Host": "esx02.example.local",
+            "EsxVersion": "8.0.3",
+            "EsxBuild": "24022510",
+            "Switch": "vSwitch1",
+            "Uplinks": "vmnic2 vmnic3",
+            "UplinkCount": "2",
+            "SpeedMbps": "25000",
+            "Mtu": "1500"
+          },
+          {
+            "Cluster": "Cluster01",
+            "Datacenter": "DC-A",
+            "Host": "esx03.example.local",
+            "EsxVersion": "8.0.3",
+            "EsxBuild": "24022510",
+            "Switch": "vSwitch0",
+            "Uplinks": "vmnic0 vmnic1",
+            "UplinkCount": "2",
+            "SpeedMbps": "25000",
+            "Mtu": "1500"
+          },
+          {
+            "Cluster": "Cluster01",
+            "Datacenter": "DC-A",
+            "Host": "esx03.example.local",
+            "EsxVersion": "8.0.3",
+            "EsxBuild": "24022510",
+            "Switch": "vSwitch1",
+            "Uplinks": "vmnic2 vmnic3",
+            "UplinkCount": "2",
+            "SpeedMbps": "25000",
+            "Mtu": "1500"
+          },
+          {
+            "Cluster": "Cluster01",
+            "Datacenter": "DC-A",
+            "Host": "esx04.example.local",
+            "EsxVersion": "8.0.3",
+            "EsxBuild": "24022510",
+            "Switch": "vSwitch0",
+            "Uplinks": "vmnic0 vmnic1",
+            "UplinkCount": "2",
+            "SpeedMbps": "25000",
+            "Mtu": "1500"
+          },
+          {
+            "Cluster": "Cluster01",
+            "Datacenter": "DC-A",
+            "Host": "esx04.example.local",
+            "EsxVersion": "8.0.3",
+            "EsxBuild": "24022510",
+            "Switch": "vSwitch1",
+            "Uplinks": "vmnic2 vmnic4",
+            "UplinkCount": "2",
+            "SpeedMbps": "25000",
+            "Mtu": "1500"
+          }
+        ],
+        "zone": "Internal",
+        "importedAt": "2026-10-29T18:07:19.801Z",
+        "file": "site-a_vdsplan.sample.csv, site-a_hosts.sample.csv"
+      },
+      "Cluster02": {
+        "rows": [
+          {
+            "Cluster": "Cluster02",
+            "Datacenter": "DC-A",
+            "Switch": "vSwitch0",
+            "NewVds": "Cluster02-vds01",
+            "StandardUplinks": "vmnic0 vmnic1",
+            "DeviatingHosts": "",
+            "PortGroup": "Management Network",
+            "Vlan": "10",
+            "HostsWithPortGroup": "3",
+            "HostsWithSwitch": "3",
+            "VdsPortGroup": "Management Network",
+            "Flags": "VMkernel port group"
+          },
+          {
+            "Cluster": "Cluster02",
+            "Datacenter": "DC-A",
+            "Switch": "vSwitch0",
+            "NewVds": "Cluster02-vds01",
+            "StandardUplinks": "vmnic0 vmnic1",
+            "DeviatingHosts": "",
+            "PortGroup": "DB-Prod",
+            "Vlan": "210",
+            "HostsWithPortGroup": "3",
+            "HostsWithSwitch": "3",
+            "VdsPortGroup": "DB-Prod",
+            "Flags": ""
+          },
+          {
+            "Cluster": "Cluster02",
+            "Datacenter": "DC-A",
+            "Switch": "vSwitch0",
+            "NewVds": "Cluster02-vds01",
+            "StandardUplinks": "vmnic0 vmnic1",
+            "DeviatingHosts": "",
+            "PortGroup": "Backup",
+            "Vlan": "300",
+            "HostsWithPortGroup": "3",
+            "HostsWithSwitch": "3",
+            "VdsPortGroup": "Backup",
+            "Flags": ""
+          }
+        ],
+        "hosts": [
+          {
+            "Cluster": "Cluster02",
+            "Datacenter": "DC-A",
+            "Host": "esx11.example.local",
+            "EsxVersion": "8.0.3",
+            "EsxBuild": "24022510",
+            "Switch": "vSwitch0",
+            "Uplinks": "vmnic0 vmnic1",
+            "UplinkCount": "2",
+            "SpeedMbps": "10000",
+            "Mtu": "1500"
+          },
+          {
+            "Cluster": "Cluster02",
+            "Datacenter": "DC-A",
+            "Host": "esx12.example.local",
+            "EsxVersion": "8.0.3",
+            "EsxBuild": "24022510",
+            "Switch": "vSwitch0",
+            "Uplinks": "vmnic0 vmnic1",
+            "UplinkCount": "2",
+            "SpeedMbps": "10000",
+            "Mtu": "1500"
+          },
+          {
+            "Cluster": "Cluster02",
+            "Datacenter": "DC-A",
+            "Host": "esx13.example.local",
+            "EsxVersion": "8.0.3",
+            "EsxBuild": "24022510",
+            "Switch": "vSwitch0",
+            "Uplinks": "vmnic0 vmnic1",
+            "UplinkCount": "2",
+            "SpeedMbps": "10000",
+            "Mtu": "1500"
+          }
+        ],
+        "zone": "Internal",
+        "importedAt": "2026-10-29T18:07:19.801Z",
+        "file": "site-a_vdsplan.sample.csv, site-a_hosts.sample.csv"
+      },
+      "Cluster03": {
+        "rows": [
+          {
+            "Cluster": "Cluster03",
+            "Datacenter": "DC-B",
+            "Switch": "vSwitch0",
+            "NewVds": "Cluster03-vds01",
+            "StandardUplinks": "vmnic0",
+            "DeviatingHosts": "",
+            "PortGroup": "Management Network",
+            "Vlan": "10",
+            "HostsWithPortGroup": "2",
+            "HostsWithSwitch": "2",
+            "VdsPortGroup": "Management Network",
+            "Flags": "VMkernel port group"
+          },
+          {
+            "Cluster": "Cluster03",
+            "Datacenter": "DC-B",
+            "Switch": "vSwitch0",
+            "NewVds": "Cluster03-vds01",
+            "StandardUplinks": "vmnic0",
+            "DeviatingHosts": "",
+            "PortGroup": "DMZ-Web",
+            "Vlan": "510",
+            "HostsWithPortGroup": "2",
+            "HostsWithSwitch": "2",
+            "VdsPortGroup": "DMZ-Web",
+            "Flags": ""
+          }
+        ],
+        "hosts": [
+          {
+            "Cluster": "Cluster03",
+            "Datacenter": "DC-B",
+            "Host": "esx31.example.local",
+            "EsxVersion": "8.0.2",
+            "EsxBuild": "22380479",
+            "Switch": "vSwitch0",
+            "Uplinks": "vmnic0",
+            "UplinkCount": "1",
+            "SpeedMbps": "1000",
+            "Mtu": "1500"
+          },
+          {
+            "Cluster": "Cluster03",
+            "Datacenter": "DC-B",
+            "Host": "esx32.example.local",
+            "EsxVersion": "8.0.3",
+            "EsxBuild": "24022510",
+            "Switch": "vSwitch0",
+            "Uplinks": "vmnic0",
+            "UplinkCount": "1",
+            "SpeedMbps": "1000",
+            "Mtu": "1500"
+          }
+        ],
+        "zone": "DMZ",
+        "importedAt": "2026-10-29T18:07:19.801Z",
+        "file": "site-a_vdsplan.sample.csv, site-a_hosts.sample.csv"
+      },
+      "Cluster04": {
+        "rows": [
+          {
+            "Cluster": "Cluster04",
+            "Datacenter": "DC-A",
+            "Switch": "vSwitch0",
+            "NewVds": "Cluster04-vds01",
+            "StandardUplinks": "vmnic0 vmnic1",
+            "DeviatingHosts": "",
+            "PortGroup": "Management Network",
+            "Vlan": "10",
+            "HostsWithPortGroup": "3",
+            "HostsWithSwitch": "3",
+            "VdsPortGroup": "Management Network",
+            "Flags": "VMkernel port group"
+          },
+          {
+            "Cluster": "Cluster04",
+            "Datacenter": "DC-A",
+            "Switch": "vSwitch0",
+            "NewVds": "Cluster04-vds01",
+            "StandardUplinks": "vmnic0 vmnic1",
+            "DeviatingHosts": "",
+            "PortGroup": "DB-Prod",
+            "Vlan": "210",
+            "HostsWithPortGroup": "3",
+            "HostsWithSwitch": "3",
+            "VdsPortGroup": "DB-Prod",
+            "Flags": ""
+          },
+          {
+            "Cluster": "Cluster04",
+            "Datacenter": "DC-A",
+            "Switch": "vSwitch0",
+            "NewVds": "Cluster04-vds01",
+            "StandardUplinks": "vmnic0 vmnic1",
+            "DeviatingHosts": "",
+            "PortGroup": "Backup",
+            "Vlan": "300",
+            "HostsWithPortGroup": "3",
+            "HostsWithSwitch": "3",
+            "VdsPortGroup": "Backup",
+            "Flags": ""
+          }
+        ],
+        "hosts": [
+          {
+            "Cluster": "Cluster04",
+            "Datacenter": "DC-A",
+            "Host": "esx21.example.local",
+            "EsxVersion": "8.0.3",
+            "EsxBuild": "24022510",
+            "Switch": "vSwitch0",
+            "Uplinks": "vmnic0 vmnic1",
+            "UplinkCount": "2",
+            "SpeedMbps": "10000",
+            "Mtu": "1500"
+          },
+          {
+            "Cluster": "Cluster04",
+            "Datacenter": "DC-A",
+            "Host": "esx22.example.local",
+            "EsxVersion": "8.0.3",
+            "EsxBuild": "24022510",
+            "Switch": "vSwitch0",
+            "Uplinks": "vmnic0 vmnic1",
+            "UplinkCount": "2",
+            "SpeedMbps": "10000",
+            "Mtu": "1500"
+          },
+          {
+            "Cluster": "Cluster04",
+            "Datacenter": "DC-A",
+            "Host": "esx23.example.local",
+            "EsxVersion": "8.0.3",
+            "EsxBuild": "24022510",
+            "Switch": "vSwitch0",
+            "Uplinks": "vmnic0 vmnic1",
+            "UplinkCount": "2",
+            "SpeedMbps": "10000",
+            "Mtu": "1500"
+          }
+        ],
+        "zone": "Internal",
+        "importedAt": "2026-10-29T18:07:19.801Z",
+        "file": "site-a_vdsplan.sample.csv, site-a_hosts.sample.csv"
+      }
+    },
+    "history": [
+      {
+        "at": "2026-10-29T18:07:19.801Z",
+        "clusters": [
+          "Cluster01",
+          "Cluster02",
+          "Cluster03",
+          "Cluster04"
+        ],
+        "changes": 0,
+        "files": [
+          "site-a_hosts.sample.csv",
+          "site-a_vdsplan.sample.csv"
+        ]
+      }
+    ]
+  },
+  "drafts": [
+    {
+      "id": "dmvtukpu51",
+      "name": "Shared DB VDS",
+      "vds": [
+        {
+          "name": "DB-shared-vds01",
+          "members": [
+            {
+              "cluster": "Cluster02",
+              "newVds": "Cluster02-vds01",
+              "sourceSwitch": "vSwitch0",
+              "uplinks": "vmnic0 vmnic1",
+              "deviating": ""
+            },
+            {
+              "cluster": "Cluster04",
+              "newVds": "Cluster04-vds01",
+              "sourceSwitch": "vSwitch0",
+              "uplinks": "vmnic0 vmnic1",
+              "deviating": ""
+            }
+          ],
+          "uplinkCount": 2,
+          "version": "8.0.3",
+          "mtu": 9000,
+          "portGroups": [
+            {
+              "name": "Management Network",
+              "include": true,
+              "source": "Management Network",
+              "sourceVlan": 10,
+              "vlanType": "vlan",
+              "vlan": 10,
+              "trunk": "",
+              "binding": "static",
+              "ports": 8,
+              "allocation": "elastic",
+              "loadBalancing": "LoadBalanceSrcId",
+              "active": [
+                "dvUplink1",
+                "dvUplink2"
+              ],
+              "standby": [],
+              "allowPromiscuous": false,
+              "macChanges": false,
+              "forgedTransmits": false,
+              "partial": false,
+              "vmk": true,
+              "trunkConfirmed": false,
+              "flags": "VMkernel port group"
+            },
+            {
+              "name": "DB-Prod",
+              "include": true,
+              "source": "DB-Prod",
+              "sourceVlan": 210,
+              "vlanType": "vlan",
+              "vlan": 210,
+              "trunk": "",
+              "binding": "static",
+              "ports": 128,
+              "allocation": "elastic",
+              "loadBalancing": "LoadBalanceSrcId",
+              "active": [
+                "dvUplink1",
+                "dvUplink2"
+              ],
+              "standby": [],
+              "allowPromiscuous": false,
+              "macChanges": false,
+              "forgedTransmits": false,
+              "partial": false,
+              "vmk": false,
+              "trunkConfirmed": false,
+              "flags": ""
+            },
+            {
+              "name": "Backup",
+              "include": true,
+              "source": "Backup",
+              "sourceVlan": 300,
+              "vlanType": "vlan",
+              "vlan": 300,
+              "trunk": "",
+              "binding": "static",
+              "ports": 8,
+              "allocation": "elastic",
+              "loadBalancing": "LoadBalanceSrcId",
+              "active": [
+                "dvUplink1",
+                "dvUplink2"
+              ],
+              "standby": [],
+              "allowPromiscuous": false,
+              "macChanges": false,
+              "forgedTransmits": false,
+              "partial": false,
+              "vmk": false,
+              "trunkConfirmed": false,
+              "flags": ""
+            },
+            {
+              "name": "DB-shared-vds01-vmotion",
+              "include": true,
+              "source": "",
+              "sourceVlan": 0,
+              "vlanType": "vlan",
+              "vlan": 20,
+              "trunk": "",
+              "binding": "static",
+              "ports": 8,
+              "allocation": "elastic",
+              "loadBalancing": "ExplicitFailover",
+              "active": [
+                "dvUplink1"
+              ],
+              "standby": [
+                "dvUplink2"
+              ],
+              "allowPromiscuous": false,
+              "macChanges": false,
+              "forgedTransmits": false,
+              "partial": false,
+              "vmk": false,
+              "trunkConfirmed": false,
+              "flags": "",
+              "vmkFor": true
+            },
+            {
+              "name": "vcenter-ephemeral",
+              "include": true,
+              "source": "",
+              "sourceVlan": 0,
+              "vlanType": "vlan",
+              "vlan": 10,
+              "trunk": "",
+              "binding": "ephemeral",
+              "ports": 8,
+              "allocation": "elastic",
+              "loadBalancing": "LoadBalanceSrcId",
+              "active": [
+                "dvUplink1",
+                "dvUplink2"
+              ],
+              "standby": [],
+              "allowPromiscuous": false,
+              "macChanges": false,
+              "forgedTransmits": false,
+              "partial": false,
+              "vmk": false,
+              "trunkConfirmed": false,
+              "flags": ""
+            }
+          ],
+          "vmkernel": [
+            {
+              "service": "vMotion",
+              "stack": "vmotion",
+              "portGroup": "DB-shared-vds01-vmotion",
+              "mtu": 9000,
+              "disableVmotionOnVmk0": true,
+              "hosts": [
+                {
+                  "host": "esx11.example.local",
+                  "ip": "10.0.20.11",
+                  "mask": "255.255.255.0"
+                },
+                {
+                  "host": "esx12.example.local",
+                  "ip": "10.0.20.12",
+                  "mask": "255.255.255.0"
+                },
+                {
+                  "host": "esx13.example.local",
+                  "ip": "10.0.20.13",
+                  "mask": "255.255.255.0"
+                },
+                {
+                  "host": "esx21.example.local",
+                  "ip": "10.0.20.14",
+                  "mask": "255.255.255.0"
+                },
+                {
+                  "host": "esx22.example.local",
+                  "ip": "10.0.20.15",
+                  "mask": "255.255.255.0"
+                },
+                {
+                  "host": "esx23.example.local",
+                  "ip": "10.0.20.16",
+                  "mask": "255.255.255.0"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "versions": [
+        {
+          "n": 1,
+          "committedBy": "Sample Operator",
+          "committedAt": "2026-10-29T18:07:20.355Z",
+          "hash": "455090ba1e3a2a3e6f326f68ac2b34a75e1b33c037d8e153a1cfdbd5ac950f8d",
+          "text": "{\n  \"format\": \"vdsplan-run/1\",\n  \"vcenter\": \"vc01.example.local\",\n  \"site\": \"Site A\",\n  \"draft\": \"Shared DB VDS\",\n  \"draftId\": \"dmvtukpu51\",\n  \"version\": 1,\n  \"committedBy\": \"Sample Operator\",\n  \"committedAt\": \"2026-10-29T18:07:20.355Z\",\n  \"vds\": [\n    {\n      \"name\": \"DB-shared-vds01\",\n      \"clusters\": [\n        \"Cluster02\",\n        \"Cluster04\"\n      ],\n      \"sourceSwitch\": \"vSwitch0\",\n      \"members\": [\n        {\n          \"cluster\": \"Cluster02\",\n          \"sourceSwitch\": \"vSwitch0\"\n        },\n        {\n          \"cluster\": \"Cluster04\",\n          \"sourceSwitch\": \"vSwitch0\"\n        }\n      ],\n      \"uplinkCount\": 2,\n      \"version\": \"8.0.3\",\n      \"mtu\": 9000,\n      \"shared\": true,\n      \"v08Check\": \"pass\",\n      \"portGroups\": [\n        {\n          \"name\": \"Management Network\",\n          \"vlanType\": \"vlan\",\n          \"vlan\": 10,\n          \"trunk\": \"\",\n          \"binding\": \"static\",\n          \"ports\": 8,\n          \"allocation\": \"elastic\",\n          \"loadBalancing\": \"LoadBalanceSrcId\",\n          \"active\": [\n            \"dvUplink1\",\n            \"dvUplink2\"\n          ],\n          \"standby\": [],\n          \"allowPromiscuous\": false,\n          \"macChanges\": false,\n          \"forgedTransmits\": false\n        },\n        {\n          \"name\": \"DB-Prod\",\n          \"vlanType\": \"vlan\",\n          \"vlan\": 210,\n          \"trunk\": \"\",\n          \"binding\": \"static\",\n          \"ports\": 128,\n          \"allocation\": \"elastic\",\n          \"loadBalancing\": \"LoadBalanceSrcId\",\n          \"active\": [\n            \"dvUplink1\",\n            \"dvUplink2\"\n          ],\n          \"standby\": [],\n          \"allowPromiscuous\": false,\n          \"macChanges\": false,\n          \"forgedTransmits\": false\n        },\n        {\n          \"name\": \"Backup\",\n          \"vlanType\": \"vlan\",\n          \"vlan\": 300,\n          \"trunk\": \"\",\n          \"binding\": \"static\",\n          \"ports\": 8,\n          \"allocation\": \"elastic\",\n          \"loadBalancing\": \"LoadBalanceSrcId\",\n          \"active\": [\n            \"dvUplink1\",\n            \"dvUplink2\"\n          ],\n          \"standby\": [],\n          \"allowPromiscuous\": false,\n          \"macChanges\": false,\n          \"forgedTransmits\": false\n        },\n        {\n          \"name\": \"DB-shared-vds01-vmotion\",\n          \"vlanType\": \"vlan\",\n          \"vlan\": 20,\n          \"trunk\": \"\",\n          \"binding\": \"static\",\n          \"ports\": 8,\n          \"allocation\": \"elastic\",\n          \"loadBalancing\": \"ExplicitFailover\",\n          \"active\": [\n            \"dvUplink1\"\n          ],\n          \"standby\": [\n            \"dvUplink2\"\n          ],\n          \"allowPromiscuous\": false,\n          \"macChanges\": false,\n          \"forgedTransmits\": false\n        },\n        {\n          \"name\": \"vcenter-ephemeral\",\n          \"vlanType\": \"vlan\",\n          \"vlan\": 10,\n          \"trunk\": \"\",\n          \"binding\": \"ephemeral\",\n          \"ports\": 0,\n          \"allocation\": \"elastic\",\n          \"loadBalancing\": \"LoadBalanceSrcId\",\n          \"active\": [\n            \"dvUplink1\",\n            \"dvUplink2\"\n          ],\n          \"standby\": [],\n          \"allowPromiscuous\": false,\n          \"macChanges\": false,\n          \"forgedTransmits\": false\n        }\n      ],\n      \"vmkernel\": [\n        {\n          \"service\": \"vMotion\",\n          \"stack\": \"vmotion\",\n          \"portGroup\": \"DB-shared-vds01-vmotion\",\n          \"mtu\": 9000,\n          \"disableVmotionOnVmk0\": true,\n          \"hosts\": [\n            {\n              \"host\": \"esx11.example.local\",\n              \"ip\": \"10.0.20.11\",\n              \"mask\": \"255.255.255.0\"\n            },\n            {\n              \"host\": \"esx12.example.local\",\n              \"ip\": \"10.0.20.12\",\n              \"mask\": \"255.255.255.0\"\n            },\n            {\n              \"host\": \"esx13.example.local\",\n              \"ip\": \"10.0.20.13\",\n              \"mask\": \"255.255.255.0\"\n            },\n            {\n              \"host\": \"esx21.example.local\",\n              \"ip\": \"10.0.20.14\",\n              \"mask\": \"255.255.255.0\"\n            },\n            {\n              \"host\": \"esx22.example.local\",\n              \"ip\": \"10.0.20.15\",\n              \"mask\": \"255.255.255.0\"\n            },\n            {\n              \"host\": \"esx23.example.local\",\n              \"ip\": \"10.0.20.16\",\n              \"mask\": \"255.255.255.0\"\n            }\n          ]\n        }\n      ]\n    }\n  ]\n}\n",
+          "base": "plan-shared-db-vds-v1",
+          "launcher": "Invoke-shared-db-vds-v1.ps1"
+        }
+      ]
+    },
+    {
+      "id": "dmvtuvj2s2",
+      "name": "Cluster01 and DMZ",
+      "vds": [
+        {
+          "name": "Cluster01-vds01",
+          "members": [
+            {
+              "cluster": "Cluster01",
+              "newVds": "Cluster01-vds01",
+              "sourceSwitch": "vSwitch0",
+              "uplinks": "vmnic0 vmnic1",
+              "deviating": ""
+            }
+          ],
+          "uplinkCount": 2,
+          "version": "8.0.3",
+          "mtu": 1500,
+          "portGroups": [
+            {
+              "name": "Management Network",
+              "include": true,
+              "source": "Management Network",
+              "sourceVlan": 10,
+              "vlanType": "vlan",
+              "vlan": 10,
+              "trunk": "",
+              "binding": "static",
+              "ports": 8,
+              "allocation": "elastic",
+              "loadBalancing": "LoadBalanceSrcId",
+              "active": [
+                "dvUplink1",
+                "dvUplink2"
+              ],
+              "standby": [],
+              "allowPromiscuous": false,
+              "macChanges": false,
+              "forgedTransmits": false,
+              "partial": false,
+              "vmk": true,
+              "trunkConfirmed": false,
+              "flags": "VMkernel port group"
+            },
+            {
+              "name": "VM Network",
+              "include": true,
+              "source": "VM Network",
+              "sourceVlan": 10,
+              "vlanType": "vlan",
+              "vlan": 10,
+              "trunk": "",
+              "binding": "static",
+              "ports": 8,
+              "allocation": "elastic",
+              "loadBalancing": "LoadBalanceSrcId",
+              "active": [
+                "dvUplink1",
+                "dvUplink2"
+              ],
+              "standby": [],
+              "allowPromiscuous": false,
+              "macChanges": false,
+              "forgedTransmits": false,
+              "partial": false,
+              "vmk": false,
+              "trunkConfirmed": false,
+              "flags": ""
+            },
+            {
+              "name": "App-Web",
+              "include": true,
+              "source": "App-Web",
+              "sourceVlan": 110,
+              "vlanType": "vlan",
+              "vlan": 110,
+              "trunk": "",
+              "binding": "static",
+              "ports": 8,
+              "allocation": "elastic",
+              "loadBalancing": "LoadBalanceSrcId",
+              "active": [
+                "dvUplink1",
+                "dvUplink2"
+              ],
+              "standby": [],
+              "allowPromiscuous": false,
+              "macChanges": false,
+              "forgedTransmits": false,
+              "partial": false,
+              "vmk": false,
+              "trunkConfirmed": false,
+              "flags": ""
+            },
+            {
+              "name": "App-Mid",
+              "include": true,
+              "source": "App-Mid",
+              "sourceVlan": 120,
+              "vlanType": "vlan",
+              "vlan": 120,
+              "trunk": "",
+              "binding": "static",
+              "ports": 8,
+              "allocation": "elastic",
+              "loadBalancing": "LoadBalanceSrcId",
+              "active": [
+                "dvUplink1",
+                "dvUplink2"
+              ],
+              "standby": [],
+              "allowPromiscuous": false,
+              "macChanges": false,
+              "forgedTransmits": false,
+              "partial": true,
+              "vmk": false,
+              "trunkConfirmed": false,
+              "flags": "On 3 of 4 hosts: check the VLAN trunk (V-05)"
+            },
+            {
+              "name": "Trunk-Appliance",
+              "include": true,
+              "source": "Trunk-Appliance",
+              "sourceVlan": 4095,
+              "vlanType": "trunk",
+              "vlan": 0,
+              "trunk": "0-4094",
+              "binding": "static",
+              "ports": 8,
+              "allocation": "elastic",
+              "loadBalancing": "LoadBalanceSrcId",
+              "active": [
+                "dvUplink1",
+                "dvUplink2"
+              ],
+              "standby": [],
+              "allowPromiscuous": false,
+              "macChanges": false,
+              "forgedTransmits": false,
+              "partial": false,
+              "vmk": false,
+              "trunkConfirmed": false,
+              "flags": "VLAN 4095: use VLAN trunking 0-4094"
+            }
+          ],
+          "vmkernel": []
+        },
+        {
+          "name": "Cluster01-vds02",
+          "members": [
+            {
+              "cluster": "Cluster01",
+              "newVds": "Cluster01-vds02",
+              "sourceSwitch": "vSwitch1",
+              "uplinks": "vmnic2 vmnic3",
+              "deviating": "esx04.example.local"
+            }
+          ],
+          "uplinkCount": 2,
+          "version": "8.0.3",
+          "mtu": 1500,
+          "portGroups": [
+            {
+              "name": "Backup",
+              "include": true,
+              "source": "Backup",
+              "sourceVlan": 300,
+              "vlanType": "vlan",
+              "vlan": 300,
+              "trunk": "",
+              "binding": "static",
+              "ports": 8,
+              "allocation": "elastic",
+              "loadBalancing": "LoadBalanceSrcId",
+              "active": [
+                "dvUplink1",
+                "dvUplink2"
+              ],
+              "standby": [],
+              "allowPromiscuous": false,
+              "macChanges": false,
+              "forgedTransmits": false,
+              "partial": false,
+              "vmk": false,
+              "trunkConfirmed": false,
+              "flags": ""
+            },
+            {
+              "name": "vMotion",
+              "include": true,
+              "source": "vMotion",
+              "sourceVlan": 20,
+              "vlanType": "vlan",
+              "vlan": 20,
+              "trunk": "",
+              "binding": "static",
+              "ports": 8,
+              "allocation": "elastic",
+              "loadBalancing": "LoadBalanceSrcId",
+              "active": [
+                "dvUplink1",
+                "dvUplink2"
+              ],
+              "standby": [],
+              "allowPromiscuous": false,
+              "macChanges": false,
+              "forgedTransmits": false,
+              "partial": false,
+              "vmk": true,
+              "trunkConfirmed": false,
+              "flags": "VMkernel port group"
+            }
+          ],
+          "vmkernel": []
+        },
+        {
+          "name": "Cluster03-vds01",
+          "members": [
+            {
+              "cluster": "Cluster03",
+              "newVds": "Cluster03-vds01",
+              "sourceSwitch": "vSwitch0",
+              "uplinks": "vmnic0",
+              "deviating": ""
+            }
+          ],
+          "uplinkCount": 1,
+          "version": "8.0.3",
+          "mtu": 1500,
+          "portGroups": [
+            {
+              "name": "Management Network",
+              "include": true,
+              "source": "Management Network",
+              "sourceVlan": 10,
+              "vlanType": "vlan",
+              "vlan": 10,
+              "trunk": "",
+              "binding": "static",
+              "ports": 8,
+              "allocation": "elastic",
+              "loadBalancing": "LoadBalanceSrcId",
+              "active": [
+                "dvUplink1"
+              ],
+              "standby": [],
+              "allowPromiscuous": false,
+              "macChanges": false,
+              "forgedTransmits": false,
+              "partial": false,
+              "vmk": true,
+              "trunkConfirmed": false,
+              "flags": "VMkernel port group"
+            },
+            {
+              "name": "DMZ-Web",
+              "include": true,
+              "source": "DMZ-Web",
+              "sourceVlan": 510,
+              "vlanType": "vlan",
+              "vlan": 510,
+              "trunk": "",
+              "binding": "static",
+              "ports": 8,
+              "allocation": "elastic",
+              "loadBalancing": "LoadBalanceSrcId",
+              "active": [
+                "dvUplink1"
+              ],
+              "standby": [],
+              "allowPromiscuous": false,
+              "macChanges": false,
+              "forgedTransmits": false,
+              "partial": false,
+              "vmk": false,
+              "trunkConfirmed": false,
+              "flags": ""
+            }
+          ],
+          "vmkernel": []
+        }
+      ],
+      "versions": []
+    }
+  ]
+}

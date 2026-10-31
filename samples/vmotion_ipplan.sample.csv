@@ -1,0 +1,4 @@
+Host,IP,SubnetMask
+esx01.example.local,10.0.20.11,255.255.255.0
+esx02.example.local,10.0.20.12,255.255.255.0
+esx03.example.local,10.0.20.13,255.255.255.0

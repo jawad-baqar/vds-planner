@@ -1,0 +1,169 @@
+{
+  "format": "vdsplan-run/1",
+  "vcenter": "vc01.example.local",
+  "site": "Site A",
+  "draft": "Shared DB VDS",
+  "draftId": "dmvtukpu51",
+  "version": 1,
+  "committedBy": "Sample Operator",
+  "committedAt": "2026-10-29T18:07:20.355Z",
+  "vds": [
+    {
+      "name": "DB-shared-vds01",
+      "clusters": [
+        "Cluster02",
+        "Cluster04"
+      ],
+      "sourceSwitch": "vSwitch0",
+      "members": [
+        {
+          "cluster": "Cluster02",
+          "sourceSwitch": "vSwitch0"
+        },
+        {
+          "cluster": "Cluster04",
+          "sourceSwitch": "vSwitch0"
+        }
+      ],
+      "uplinkCount": 2,
+      "version": "8.0.3",
+      "mtu": 9000,
+      "shared": true,
+      "v08Check": "pass",
+      "portGroups": [
+        {
+          "name": "Management Network",
+          "vlanType": "vlan",
+          "vlan": 10,
+          "trunk": "",
+          "binding": "static",
+          "ports": 8,
+          "allocation": "elastic",
+          "loadBalancing": "LoadBalanceSrcId",
+          "active": [
+            "dvUplink1",
+            "dvUplink2"
+          ],
+          "standby": [],
+          "allowPromiscuous": false,
+          "macChanges": false,
+          "forgedTransmits": false
+        },
+        {
+          "name": "DB-Prod",
+          "vlanType": "vlan",
+          "vlan": 210,
+          "trunk": "",
+          "binding": "static",
+          "ports": 128,
+          "allocation": "elastic",
+          "loadBalancing": "LoadBalanceSrcId",
+          "active": [
+            "dvUplink1",
+            "dvUplink2"
+          ],
+          "standby": [],
+          "allowPromiscuous": false,
+          "macChanges": false,
+          "forgedTransmits": false
+        },
+        {
+          "name": "Backup",
+          "vlanType": "vlan",
+          "vlan": 300,
+          "trunk": "",
+          "binding": "static",
+          "ports": 8,
+          "allocation": "elastic",
+          "loadBalancing": "LoadBalanceSrcId",
+          "active": [
+            "dvUplink1",
+            "dvUplink2"
+          ],
+          "standby": [],
+          "allowPromiscuous": false,
+          "macChanges": false,
+          "forgedTransmits": false
+        },
+        {
+          "name": "DB-shared-vds01-vmotion",
+          "vlanType": "vlan",
+          "vlan": 20,
+          "trunk": "",
+          "binding": "static",
+          "ports": 8,
+          "allocation": "elastic",
+          "loadBalancing": "ExplicitFailover",
+          "active": [
+            "dvUplink1"
+          ],
+          "standby": [
+            "dvUplink2"
+          ],
+          "allowPromiscuous": false,
+          "macChanges": false,
+          "forgedTransmits": false
+        },
+        {
+          "name": "vcenter-ephemeral",
+          "vlanType": "vlan",
+          "vlan": 10,
+          "trunk": "",
+          "binding": "ephemeral",
+          "ports": 0,
+          "allocation": "elastic",
+          "loadBalancing": "LoadBalanceSrcId",
+          "active": [
+            "dvUplink1",
+            "dvUplink2"
+          ],
+          "standby": [],
+          "allowPromiscuous": false,
+          "macChanges": false,
+          "forgedTransmits": false
+        }
+      ],
+      "vmkernel": [
+        {
+          "service": "vMotion",
+          "stack": "vmotion",
+          "portGroup": "DB-shared-vds01-vmotion",
+          "mtu": 9000,
+          "disableVmotionOnVmk0": true,
+          "hosts": [
+            {
+              "host": "esx11.example.local",
+              "ip": "10.0.20.11",
+              "mask": "255.255.255.0"
+            },
+            {
+              "host": "esx12.example.local",
+              "ip": "10.0.20.12",
+              "mask": "255.255.255.0"
+            },
+            {
+              "host": "esx13.example.local",
+              "ip": "10.0.20.13",
+              "mask": "255.255.255.0"
+            },
+            {
+              "host": "esx21.example.local",
+              "ip": "10.0.20.14",
+              "mask": "255.255.255.0"
+            },
+            {
+              "host": "esx22.example.local",
+              "ip": "10.0.20.15",
+              "mask": "255.255.255.0"
+            },
+            {
+              "host": "esx23.example.local",
+              "ip": "10.0.20.16",
+              "mask": "255.255.255.0"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

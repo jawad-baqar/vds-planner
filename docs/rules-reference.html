@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VDS Planner design rules</title>
+<style>
+:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b1c1e;--muted:#5f636a;--line:#d9dce1;--soft:#eef0f3;--accent:#005C8A;--ok:#2e7d4f;--ok-soft:#e2f2e8;--warn:#8f6400;--warn-soft:#fbf0d4;--bad:#a63a32;--bad-soft:#f8e3e1;--info-soft:#e1edf4}
+@media (prefers-color-scheme:dark){:root{--bg:#16171a;--panel:#1f2125;--ink:#e7e8ea;--muted:#9a9ea6;--line:#363a41;--soft:#2a2d33;--accent:#7fb0e0;--ok:#6cc495;--ok-soft:#1d3428;--warn:#e0b450;--warn-soft:#3a3018;--bad:#ec8a80;--bad-soft:#3d2220;--info-soft:#22344a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1040px;margin:0 auto;padding:30px 16px 60px}
+.eyebrow{font:12px ui-monospace,Consolas,monospace;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+h1{font-size:28px;margin:4px 0 6px}
+h2{font-size:19px;margin:30px 0 10px;padding-top:10px;border-top:1px solid var(--line)}
+p{margin:6px 0 10px}.m{color:var(--muted)}
+a{color:var(--accent)}
+code{font:13px ui-monospace,Consolas,monospace;background:var(--soft);padding:1px 5px;border-radius:4px}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--soft);white-space:nowrap}tr:last-child td{border-bottom:none}
+.tag{display:inline-block;font:12px/1.6 ui-monospace,Consolas,monospace;padding:0 8px;border-radius:10px;border:1px solid currentColor;white-space:nowrap}
+.t-bad{color:var(--bad);background:var(--bad-soft)}.t-warn{color:var(--warn);background:var(--warn-soft)}.t-info{color:var(--accent);background:var(--info-soft)}.t-ok{color:var(--ok);background:var(--ok-soft)}
+@media print{table{break-inside:auto}tr{break-inside:avoid}}
+</style>
+</head>
+<body>
+<main>
+<div class="eyebrow">VDS Planner · design rules and checks</div>
+<h1>Design rules and checks</h1>
+<p><a href="index.html">Documentation home</a> · <a href="vds-planner-guide.html#checks">User guide, checks</a></p>
+<p>The planner checks each draft against the design rules all the time. The checks show at the bottom of the draft and in the guide bar. Each line names the VDS, the rule and the action.</p>
+<div class="tbl"><table>
+<thead><tr><th>Level</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><span class="tag t-bad">block</span></td><td>The commit is not possible. Correct the item first.</td></tr>
+<tr><td><span class="tag t-warn">warn</span></td><td>The commit is possible. Read the item and make sure that it is correct for your environment.</td></tr>
+<tr><td><span class="tag t-info">info</span></td><td>A note for the change window, for example the VMkernel adapters that move later.</td></tr>
+</tbody></table></div>
+
+<h2>The design rules</h2>
+<div class="tbl"><table>
+<thead><tr><th>Rule</th><th>Rule text</th><th>What the planner does</th><th>When it blocks, do this</th></tr></thead>
+<tbody>
+<tr><td><b>V-01</b></td><td>One VDS for each standard switch of each cluster. vSwitch0 becomes <code>&lt;cluster&gt;-vds01</code>, the next switch <code>&lt;cluster&gt;-vds02</code>.</td><td>Add and Add all switches make one VDS for each switch with this name, with the port groups and the uplinks of the switch.</td><td>No block. Rename the VDS if your naming standard is different.</td></tr>
+<tr><td><b>V-02</b></td><td>The VDS has two uplinks or more.</td><td>Counts the uplinks of the standard switch in the inventory.</td><td>Add a second physical adapter to the standard switch of the hosts, import the inventory again and select Sync from inventory.</td></tr>
+<tr><td><b>V-05</b></td><td>A port group that is not on all hosts is made only after a VLAN trunk check.</td><td>Marks the port groups that are on fewer hosts than the switch, or on fewer clusters than the VDS.</td><td>Ask the network team to confirm that the physical switch ports of all hosts carry the VLAN. Then select the VDS name and the trunk check for all port groups of the VDS, or the check on one port group.</td></tr>
+<tr><td><b>V-06</b></td><td>The uplink layout of most hosts is the standard.</td><td>Uses the layout of most hosts (on a tie, the first host) and lists the hosts with a different layout.</td><td>No block (warning). Correct the hosts with a different layout before the migration.</td></tr>
+<tr><td><b>V-07</b></td><td>A switch on a minority of hosts with no uplinks is not converted.</td><td>Leaves the switch out of the plan.</td><td>No block.</td></tr>
+<tr><td><b>V-08</b></td><td>One VDS for more than one cluster only in one datacenter and one security zone. DMZ and internal clusters never share a VDS.</td><td>Blocks a different datacenter, a different or missing zone and a cluster with fewer than two uplinks. Shows the other differences (uplink names, NIC speed, port groups): you accept them, and the plan records them.</td><td>Set the zone of each cluster. Move the cluster to another VDS, or select Accept the differences on the VDS.</td></tr>
+<tr><td><b>V-09</b></td><td>Design defaults: VDS version 8.0.3, MTU 1500, LLDP in both directions, teaming route based on originating virtual port, an ephemeral port group for the vCenter VM.</td><td>Uses the defaults for each new VDS. A new vMotion or Provisioning adapter sets MTU 9000 (you can change it).</td><td>No block. Add an ephemeral port group on the VDS of the cluster that runs the vCenter VM.</td></tr>
+<tr><td><b>V-10</b></td><td>The iDRAC USB switch and the BMC switch (<code>vSwitchiDRACvusb</code>, <code>vSwitchBMC</code>) are removed, not converted.</td><td>Leaves these switches out of the plan.</td><td>No block.</td></tr>
+</tbody></table></div>
+<p class="m">Two more design principles have no check of their own: the VDS uses the physical uplinks of the standard switch, and it gets only the port groups of its own clusters.</p>
+
+<h2>Other checks</h2>
+<div class="tbl"><table>
+<thead><tr><th>Check</th><th>Level</th><th>Why</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td>Port group name unique in a datacenter</td><td><span class="tag t-bad">block</span></td><td>vCenter refuses a second distributed port group with the same name in one datacenter, also on an existing VDS.</td><td>Select Fix names on the draft, or Add a name prefix on the VDS, or put the clusters on one VDS.</td></tr>
+<tr><td>Same name two times on one VDS</td><td><span class="tag t-bad">block</span></td><td>Two port groups with the same name and different VLANs.</td><td>Select Fix names: the VLAN is added to the names.</td></tr>
+<tr><td>ESXi version earlier than the VDS version</td><td><span class="tag t-bad">block</span></td><td>A host cannot join a VDS of a later version.</td><td>Upgrade the host, or select an earlier VDS version.</td></tr>
+<tr><td>VLAN, trunk range, ports, active uplink, uplink names</td><td><span class="tag t-bad">block</span></td><td>Values that vCenter refuses.</td><td>Correct the value in the settings of the port group.</td></tr>
+<tr><td>VMkernel adapter: port group, stack, MTU, IP address, subnet mask, duplicate IP</td><td><span class="tag t-bad">block</span></td><td>The adapter cannot be made.</td><td>Correct the adapter. Use Fill from a first IP or Import IP plan CSV.</td></tr>
+<tr><td>The inventory changed after the draft</td><td><span class="tag t-warn">warn</span> or <span class="tag t-bad">block</span></td><td>New port groups, a changed VLAN or a changed uplink count.</td><td>Select Sync from inventory on the VDS.</td></tr>
+<tr><td>Security setting Accept</td><td><span class="tag t-warn">warn</span></td><td>Promiscuous mode, MAC address changes or forged transmits is Accept.</td><td>Make sure that the setting is necessary.</td></tr>
+<tr><td>Jumbo frames</td><td><span class="tag t-warn">warn</span></td><td>A VDS with MTU 9000 needs MTU 9000 on all physical switch ports of all hosts.</td><td>Confirm with the network team.</td></tr>
+<tr><td>vCenter name</td><td><span class="tag t-bad">block</span></td><td>The launcher connects to this vCenter.</td><td>Enter the vCenter at the top or in Project settings.</td></tr>
+</tbody></table></div>
+
+<h2>Checks of the scripts</h2>
+<p><code>Invoke-VdsPlan.ps1</code> and <code>Get-VdsPlanPreflight.ps1</code> do the same checks again against the live vCenter before any change: the hash of the plan file, the format, the hosts and their versions, the port group names in the datacenter and the IP addresses in use. A blocking item stops the script before it changes anything.</p>
+</main>
+</body>
+</html>

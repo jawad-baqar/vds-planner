@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VDS Planner documentation</title>
+<style>
+:root{--bg:#f6f7f9;--panel:#fff;--ink:#1b1c1e;--muted:#5f636a;--line:#d9dce1;--soft:#eef0f3;--accent:#005C8A;--accent-soft:#e1edf4}
+@media (prefers-color-scheme:dark){:root{--bg:#16171a;--panel:#1f2125;--ink:#e7e8ea;--muted:#9a9ea6;--line:#363a41;--soft:#2a2d33;--accent:#7fb0e0;--accent-soft:#22344a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:30px 16px 60px}
+.eyebrow{font:12px ui-monospace,Consolas,monospace;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+h1{font-size:30px;margin:4px 0 6px}
+h2{font-size:19px;margin:30px 0 10px;padding-top:10px;border-top:1px solid var(--line)}
+p{margin:6px 0 10px}.m{color:var(--muted)}
+a{color:var(--accent)}
+code{font:13px ui-monospace,Consolas,monospace;background:var(--soft);padding:1px 5px;border-radius:4px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:14px 0}
+.card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;text-decoration:none;color:var(--ink)}
+.card:hover,.card:focus-visible{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);outline:none}
+.card b{display:block;font-size:16px;margin-bottom:4px;color:var(--accent)}
+.card span{font-size:13.5px;color:var(--muted)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--soft)}tr:last-child td{border-bottom:none}
+@media print{.card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<main>
+<div class="eyebrow">VDS Planner · documentation</div>
+<h1>VDS Planner documentation</h1>
+<p>The VDS Planner plans the change from vSphere standard switches to distributed switches (VDS) for one vCenter. It reads the inventory of the vCenter, checks the plan against design rules and generates a PowerShell package that makes the change with VMware PowerCLI. The planner is one HTML file. It needs no install, no server and no network connection.</p>
+
+<h2>Start here</h2>
+<div class="cards">
+  <a class="card" href="getting-started.html"><b>Getting started</b><span>Your first plan in 15 minutes: the demo project, your own inventory, a commit and a dry run.</span></a>
+  <a class="card" href="vds-planner-guide.html"><b>User guide</b><span>All functions of the planner and the scripts, step by step: inventory, drafts, VDS for more clusters, VMkernel adapters, commit, run, rollback.</span></a>
+  <a class="card" href="rules-reference.html"><b>Design rules and checks</b><span>What each rule (V-01 to V-10) means, what the planner checks and what to do when a check blocks.</span></a>
+  <a class="card" href="troubleshooting.html"><b>Troubleshooting and questions</b><span>Browser support, file access, script policy, PowerCLI, blocked checks and other common questions.</span></a>
+  <a class="card" href="vds-planner-live-test.html"><b>Live test checklist</b><span>The test cases to do on a lab vCenter and on a pilot cluster before production. The page keeps your results.</span></a>
+  <a class="card" href="feedback.html"><b>Feedback</b><span>How to tell us what works and what you need, and how we use the feedback for the next revisions.</span></a>
+</div>
+
+<h2>Requirements</h2>
+<div class="tbl"><table>
+<thead><tr><th>Part</th><th>Requirement</th></tr></thead>
+<tbody>
+<tr><td>Planner</td><td>Microsoft Edge or Google Chrome. Other browsers work, but Save downloads a file and the recent project list is not available.</td></tr>
+<tr><td>Scripts</td><td>Windows PowerShell 5.1 or PowerShell 7, VMware PowerCLI 13 or later (<code>VMware.VimAutomation.Core</code> and <code>VMware.VimAutomation.Vds</code>).</td></tr>
+<tr><td>vCenter</td><td>vSphere 8. A user with the permissions to make VDS and port groups and to change host networking.</td></tr>
+<tr><td>Inventory</td><td>The inventory workbook (.xlsx) of the vCenter (full, or the network sheets <code>vSwitch</code>, <code>vPort</code>, <code>vNIC</code>, <code>vSC_VMK</code>, <code>dvSwitch</code>, <code>dvPort</code>, <code>vHost</code>), CSV exports of those sheets, or the export of <code>Export-VssLayout.ps1</code>.</td></tr>
+</tbody></table></div>
+
+<h2>Contents of the package</h2>
+<div class="tbl"><table>
+<thead><tr><th>Folder</th><th>Contents</th></tr></thead>
+<tbody>
+<tr><td><code>planner</code></td><td><code>vds-planner.html</code>: the planner</td></tr>
+<tr><td><code>scripts\network</code></td><td><code>Invoke-VdsPlan.ps1</code> (applies a committed plan), <code>Get-VdsPlanPreflight.ps1</code> (read-only checks), <code>Remove-VdsPlanSwitch.ps1</code> (rollback of an unused VDS), <code>Move-HostToVds.ps1</code>, <code>Move-VmNetworkToVds.ps1</code>, <code>New-ClusterVds.ps1</code>, <code>Add-VMotionVmk.ps1</code></td></tr>
+<tr><td><code>scripts\inventory</code></td><td><code>Export-VssLayout.ps1</code> (inventory from vCenter), <code>Export-PlannerInventory.ps1</code> and <code>Export-PlannerPreload.ps1</code> (inventory from a workbook)</td></tr>
+<tr><td><code>scripts\lib</code></td><td>Modules for the plan file checks and the workbook reader</td></tr>
+<tr><td><code>samples</code></td><td>A sample project and a sample package with made-up data</td></tr>
+<tr><td><code>tests</code></td><td>Tests that need no vCenter</td></tr>
+<tr><td><code>docs</code></td><td>This documentation</td></tr>
+</tbody></table></div>
+<p class="m">See <code>CHANGELOG.md</code> for the changes in each version.</p>
+</main>
+</body>
+</html>

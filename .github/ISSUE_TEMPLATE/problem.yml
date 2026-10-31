@@ -1,0 +1,60 @@
+name: Problem
+description: Something does not work as the documentation says.
+title: "[Problem] "
+labels: ["problem"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not put customer data, host names, IP addresses, VLAN IDs, inventory files, project files or credentials here. Use made-up values to show the problem.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Inventory import
+        - Drafts and VDS
+        - Topology view
+        - Checks and design rules
+        - Commit and package
+        - PowerShell scripts
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps
+      description: What did you do, step by step?
+      placeholder: |
+        1. Open the demo project.
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+      description: The message, the check text or the PowerShell error. Remove host names and IP addresses.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Help, About in the planner.
+      placeholder: VDS Planner 1.0.0
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and PowerShell
+      placeholder: Microsoft Edge 130, PowerShell 7.4, PowerCLI 13.3
